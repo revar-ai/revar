@@ -3,8 +3,7 @@
 </h1>
 
 <p align="center">
-  <strong>A deterministic, reproducible test environment for AI browser agents — 
-synthetic websites, failure injection, no real traffic.</strong>
+  <strong>A deterministic, reproducible test platform for AI browser agents</strong>
 </p>
 
 <div align="center">
@@ -15,7 +14,7 @@ synthetic websites, failure injection, no real traffic.</strong>
     <img src="https://img.shields.io/github/license/revar-ai/revar" alt="License" /></a>
 </div>
 
-Real websites are flaky, expensive, rate-limited, and hostile to automated traffic. Static-HTML benchmarks lack state and dynamic behavior. Revar gives your browser agent a realistic, stateful, instrumented playground — locally, in Docker, in 5 minutes.
+Real websites are flaky, expensive, rate-limited, and hostile to automated traffic. Static-HTML benchmarks lack state and dynamic behavior. Revar gives your browser agent a realistic, stateful, instrumented playground — with synthetic websites and failure-mode injection.
 
 ## What's in v0
 
