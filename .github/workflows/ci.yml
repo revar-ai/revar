@@ -64,11 +64,12 @@ jobs:
           exit 1
 
   task-validation:
+    # Pure schema validation — no running site needed. We pass --skip-live so
+    # the validator returns after JSON-Schema checks and doesn't attempt any
+    # HTTP probe of a backend. Therefore this job has no dependency on the
+    # docker job and does not need a `services:` container.
     runs-on: ubuntu-latest
-    needs: [python, docker]
-    services:
-      shop:
-        image: revar/shop_v1:ci
+    needs: [python]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -80,7 +81,8 @@ jobs:
           pip install -e packages/core-py
       - name: Validate every bundled task
         run: |
-          for f in $(find tasks -name '*.yaml'); do
+          shopt -s globstar nullglob
+          for f in tasks/**/*.yaml; do
             echo "::group::$f"
             revar task validate "$f" --skip-live
             echo "::endgroup::"
