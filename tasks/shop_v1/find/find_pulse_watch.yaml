@@ -1,0 +1,25 @@
+id: shop_v1.find.northwood_pulse_watch
+site: shop_v1
+category: find
+hardness: easy
+viewport: desktop
+seed: 42
+goal: |
+  Find the product "Northwood Pulse Watch" in the Acme Shop catalog and open
+  its detail page so its price and full description are visible.
+parameters:
+  product_name: Northwood Pulse Watch
+  product_slug: northwood-pulse-watch
+modifiers:
+  latency_profile: fast
+success:
+  type: state_predicate
+  query: |
+    SELECT COUNT(*) AS count FROM eventlog
+    WHERE type = 'product_view' AND detail LIKE '%"slug": "northwood-pulse-watch"%'
+  predicate: result >= 1
+budget:
+  max_steps: 15
+  max_tokens: 30000
+  max_wall_clock_s: 90
+tags: ["smoke", "navigation", "wearables"]

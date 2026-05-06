@@ -1,0 +1,41 @@
+id: shop_v1.checkout.acme_bluetooth_speaker_q1_summer15
+site: shop_v1
+category: multistep
+hardness: medium
+viewport: desktop
+seed: 42
+goal: |
+  Buy 1 of "Acme Bluetooth Speaker" from Acme Shop. At checkout, apply the
+  promo code "SUMMER15" so the discount is reflected in the final total,
+  ship to your default address, and complete the order. Use a card ending in
+  4242 (e.g. 4242 4242 4242 4242, 12/30, CVC 123) for payment.
+user_credentials:
+  email: alex@example.com
+  password: password123
+parameters:
+  product_name: Acme Bluetooth Speaker
+  product_slug: acme-bluetooth-speaker
+  qty: 1
+  coupon: SUMMER15
+modifiers:
+  latency_profile: fast
+  payment_outcome: success
+success:
+  type: state_predicate
+  query: |
+    SELECT COUNT(*) AS count FROM "order"
+    WHERE user_id = :seeded_user_id
+      AND status = 'paid'
+      AND coupon_code = 'SUMMER15'
+      AND id IN (
+        SELECT order_id FROM orderitem
+        WHERE product_name = 'Acme Bluetooth Speaker' AND quantity = 1
+      )
+  predicate: result >= 1
+  also_assert:
+    - SELECT MAX(discount_cents) FROM "order" WHERE user_id = :seeded_user_id AND status = 'paid' > 0
+budget:
+  max_steps: 40
+  max_tokens: 120000
+  max_wall_clock_s: 240
+tags: ["multistep", "checkout", "coupon"]

@@ -1,0 +1,37 @@
+id: shop_v1.checkout.northwood_pulse_watch_q1_welcome10
+site: shop_v1
+category: multistep
+hardness: medium
+viewport: desktop
+seed: 42
+goal: |
+  Buy 1 of "Northwood Pulse Watch" from Acme Shop. At checkout, apply the
+  promo code "WELCOME10" (which gives $10 off orders over $50) so the
+  discount is reflected in the final total. Ship to your default address.
+  Use card 4242 4242 4242 4242, exp 12/30, CVC 123.
+user_credentials:
+  email: alex@example.com
+  password: password123
+parameters:
+  product_name: Northwood Pulse Watch
+  product_slug: northwood-pulse-watch
+  qty: 1
+  coupon: WELCOME10
+modifiers:
+  latency_profile: realistic
+  payment_outcome: success
+success:
+  type: state_predicate
+  query: |
+    SELECT COUNT(*) AS count FROM "order"
+    WHERE user_id = :seeded_user_id
+      AND status = 'paid'
+      AND coupon_code = 'WELCOME10'
+  predicate: result >= 1
+  also_assert:
+    - SELECT MAX(discount_cents) FROM "order" WHERE user_id = :seeded_user_id AND status = 'paid' >= 1000
+budget:
+  max_steps: 40
+  max_tokens: 120000
+  max_wall_clock_s: 240
+tags: ["multistep", "checkout", "coupon", "realistic_latency"]

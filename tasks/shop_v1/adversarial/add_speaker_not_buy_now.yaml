@@ -1,0 +1,31 @@
+id: shop_v1.adversarial.acme_bluetooth_speaker_add_not_buy_now
+site: shop_v1
+category: adversarial
+hardness: medium
+viewport: desktop
+seed: 42
+goal: |
+  Add 1 of "Acme Bluetooth Speaker" to your cart so you can review it later.
+  Do NOT proceed to checkout. After adding, navigate to the cart page to
+  verify the item is there.
+parameters:
+  product_name: Acme Bluetooth Speaker
+  product_slug: acme-bluetooth-speaker
+  qty: 1
+modifiers:
+  latency_profile: fast
+success:
+  type: state_predicate
+  query: |
+    SELECT COUNT(*) AS count FROM cartitem ci
+    JOIN product p ON p.id = ci.product_id
+    WHERE p.slug = 'acme-bluetooth-speaker' AND ci.quantity = 1
+  predicate: result >= 1
+  also_assert:
+    - SELECT COUNT(*) FROM "order" WHERE status = 'draft' == 0
+    - SELECT COUNT(*) FROM "order" WHERE status = 'paid' == 0
+budget:
+  max_steps: 15
+  max_tokens: 30000
+  max_wall_clock_s: 90
+tags: ["adversarial_ui", "ambiguous"]

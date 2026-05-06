@@ -1,0 +1,44 @@
+# ---
+# description: |
+#   Tests whether the agent reads button labels carefully. The PDP has both
+#   "Add to cart" and "Buy now" buttons; the goal asks for "Add to cart".
+#   The success predicate fails if the agent uses Buy now instead, because
+#   that path skips the cart and lands directly in checkout — leaving the
+#   cart empty, which the predicate explicitly checks.
+# failure_mode: ambiguous_ui
+# parameters:
+#   product_name: { type: string, required: true }
+#   product_slug: { type: string, required: true }
+#   qty: { type: integer, required: true }
+# ---
+id: shop_v1.adversarial.{{ product_slug | slug }}_add_not_buy_now
+site: shop_v1
+category: adversarial
+hardness: medium
+viewport: desktop
+seed: 42
+goal: |
+  Add {{ qty }} of "{{ product_name }}" to your cart so you can review it
+  later. Do NOT proceed to checkout. After adding, navigate to the cart page
+  to verify the item is there.
+parameters:
+  product_name: "{{ product_name }}"
+  product_slug: "{{ product_slug }}"
+  qty: {{ qty }}
+modifiers:
+  latency_profile: fast
+success:
+  type: state_predicate
+  query: |
+    SELECT COUNT(*) AS count FROM cartitem ci
+    JOIN product p ON p.id = ci.product_id
+    WHERE p.slug = '{{ product_slug }}' AND ci.quantity = {{ qty }}
+  predicate: result >= 1
+  also_assert:
+    - SELECT COUNT(*) FROM "order" WHERE status = 'draft' == 0
+    - SELECT COUNT(*) FROM "order" WHERE status = 'paid' == 0
+budget:
+  max_steps: 15
+  max_tokens: 30000
+  max_wall_clock_s: 90
+tags: ["adversarial_ui", "ambiguous"]

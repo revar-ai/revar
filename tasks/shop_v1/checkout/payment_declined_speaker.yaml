@@ -1,0 +1,37 @@
+id: shop_v1.checkout.acme_bluetooth_speaker_payment_declined_recovery
+site: shop_v1
+category: checkout
+hardness: medium
+viewport: desktop
+seed: 42
+goal: |
+  Buy 1 of "Acme Bluetooth Speaker". Your first payment attempt will be
+  declined by the issuer. Recover and retry until the order is paid. You
+  can ship to your default address. Use any 12-19 digit card; the gateway
+  is configured to decline once and accept on retry.
+user_credentials:
+  email: alex@example.com
+  password: password123
+parameters:
+  product_name: Acme Bluetooth Speaker
+  product_slug: acme-bluetooth-speaker
+modifiers:
+  latency_profile: fast
+  payment_outcome:
+    sequence: ["declined", "success"]
+success:
+  type: state_predicate
+  query: |
+    SELECT COUNT(*) AS count FROM "order"
+    WHERE user_id = :seeded_user_id
+      AND status = 'paid'
+      AND payment_attempts >= 2
+  predicate: result >= 1
+  also_assert:
+    - SELECT COUNT(*) FROM paymentattempt WHERE outcome = 'declined' >= 1
+    - SELECT COUNT(*) FROM paymentattempt WHERE outcome = 'success' >= 1
+budget:
+  max_steps: 40
+  max_tokens: 100000
+  max_wall_clock_s: 240
+tags: ["checkout", "recovery", "payment_failure"]

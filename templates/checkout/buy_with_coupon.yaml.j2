@@ -1,0 +1,50 @@
+# ---
+# description: Add N of a product, apply a coupon at checkout, complete payment.
+# failure_mode: multistep_purchase
+# parameters:
+#   product_name: { type: string, required: true }
+#   product_slug: { type: string, required: true }
+#   qty: { type: integer, required: true }
+#   coupon: { type: string, required: true }
+# ---
+id: shop_v1.checkout.{{ product_slug | slug }}_q{{ qty }}_{{ coupon | slug }}
+site: shop_v1
+category: multistep
+hardness: medium
+viewport: desktop
+seed: 42
+goal: |
+  Buy {{ qty }} of "{{ product_name }}" from Acme Shop. At checkout, apply the
+  promo code "{{ coupon }}" so the discount is reflected in the final total,
+  ship to your default address, and complete the order. Use a card ending in
+  4242 (e.g. 4242 4242 4242 4242, 12/30, CVC 123) for payment.
+user_credentials:
+  email: alex@example.com
+  password: password123
+parameters:
+  product_name: "{{ product_name }}"
+  product_slug: "{{ product_slug }}"
+  qty: {{ qty }}
+  coupon: "{{ coupon }}"
+modifiers:
+  latency_profile: fast
+  payment_outcome: success
+success:
+  type: state_predicate
+  query: |
+    SELECT COUNT(*) AS count FROM "order"
+    WHERE user_id = :seeded_user_id
+      AND status = 'paid'
+      AND coupon_code = '{{ coupon }}'
+      AND id IN (
+        SELECT order_id FROM orderitem
+        WHERE product_name = '{{ product_name }}' AND quantity = {{ qty }}
+      )
+  predicate: result >= 1
+  also_assert:
+    - SELECT MAX(discount_cents) FROM "order" WHERE user_id = :seeded_user_id AND status = 'paid' > 0
+budget:
+  max_steps: 40
+  max_tokens: 120000
+  max_wall_clock_s: 240
+tags: ["multistep", "checkout", "coupon"]

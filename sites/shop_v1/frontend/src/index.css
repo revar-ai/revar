@@ -1,0 +1,40 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply text-slate-900;
+  }
+  a {
+    @apply text-brand-700 hover:text-brand-900;
+  }
+  button {
+    @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium text-sm transition-colors;
+  }
+  .btn-primary {
+    @apply bg-brand-600 text-white hover:bg-brand-700 disabled:bg-slate-300;
+  }
+  .btn-secondary {
+    @apply bg-white border border-slate-300 hover:bg-slate-50 disabled:opacity-50;
+  }
+  .btn-danger {
+    @apply bg-rose-600 text-white hover:bg-rose-700;
+  }
+  .input {
+    @apply w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500;
+  }
+  .label {
+    @apply block text-sm font-medium text-slate-700 mb-1;
+  }
+  .card {
+    @apply rounded-lg border border-slate-200 bg-white;
+  }
+}

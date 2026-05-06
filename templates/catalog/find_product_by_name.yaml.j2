@@ -1,0 +1,32 @@
+# ---
+# description: Locate a specific product by name from the catalog and open its detail page.
+# failure_mode: simple_navigation
+# parameters:
+#   product_name: { type: string, required: true }
+#   product_slug: { type: string, required: true }
+# ---
+id: shop_v1.find.{{ product_slug | slug }}
+site: shop_v1
+category: find
+hardness: easy
+viewport: desktop
+seed: 42
+goal: |
+  Find the product "{{ product_name }}" in the Acme Shop catalog and open its
+  detail page so its price, rating, and full description are visible.
+parameters:
+  product_name: "{{ product_name }}"
+  product_slug: "{{ product_slug }}"
+modifiers:
+  latency_profile: fast
+success:
+  type: state_predicate
+  query: |
+    SELECT COUNT(*) AS count FROM eventlog
+    WHERE type = 'product_view' AND detail LIKE '%"slug": "{{ product_slug }}"%'
+  predicate: result >= 1
+budget:
+  max_steps: 15
+  max_tokens: 30000
+  max_wall_clock_s: 90
+tags: ["smoke", "navigation"]

@@ -1,0 +1,87 @@
+# SPDX-License-Identifier: Apache-2.0
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: |
+          pip install -e packages/shared-models
+          pip install -e 'packages/core-py[dev]'
+          pip install ruff
+      - name: Lint
+        run: ruff check packages
+      - name: Test
+        run: pytest -q packages
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install
+        working-directory: sites/shop_v1/frontend
+        run: npm install --no-audit --no-fund
+      - name: Typecheck
+        working-directory: sites/shop_v1/frontend
+        run: npx tsc --noEmit
+      - name: Build
+        working-directory: sites/shop_v1/frontend
+        run: npm run build
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build shop_v1 image
+        run: docker build -f sites/shop_v1/Dockerfile -t revar/shop_v1:ci .
+      - name: Smoke-test container
+        run: |
+          docker run -d --name shop_v1 -p 8080:8080 revar/shop_v1:ci
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8080/api/health; then
+              echo "healthy"
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs shop_v1
+          exit 1
+
+  task-validation:
+    runs-on: ubuntu-latest
+    needs: [python, docker]
+    services:
+      shop:
+        image: revar/shop_v1:ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: |
+          pip install -e packages/shared-models
+          pip install -e packages/core-py
+      - name: Validate every bundled task
+        run: |
+          for f in $(find tasks -name '*.yaml'); do
+            echo "::group::$f"
+            revar task validate "$f" --skip-live
+            echo "::endgroup::"
+          done

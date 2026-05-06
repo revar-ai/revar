@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://revar.dev/schemas/task.schema.json",
+  "title": "revar task",
+  "type": "object",
+  "required": ["id", "site", "category", "goal", "success"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+\\.[a-z0-9_]+(\\.[a-z0-9_]+)*$",
+      "description": "Dot-separated id, e.g. shop_v1.checkout.payment_declined_recovery"
+    },
+    "site": { "type": "string", "minLength": 1 },
+    "category": {
+      "type": "string",
+      "enum": ["find", "cart", "checkout", "account", "multistep", "adversarial", "mobile"]
+    },
+    "hardness": { "type": "string", "enum": ["easy", "medium", "hard"], "default": "medium" },
+    "viewport": {
+      "type": "string",
+      "enum": ["desktop", "mobile_iphone15", "mobile_pixel7"],
+      "default": "desktop"
+    },
+    "seed": { "type": "integer", "default": 42 },
+    "goal": { "type": "string", "minLength": 4 },
+    "user_credentials": {
+      "type": "object",
+      "description": "If set, the runner pre-authenticates the agent's browser context.",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "password": { "type": "string", "minLength": 1 }
+      },
+      "required": ["email", "password"]
+    },
+    "parameters": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "modifiers": {
+      "type": "object",
+      "properties": {
+        "latency_profile": {
+          "type": "string",
+          "enum": ["none", "fast", "realistic", "slow_3g"],
+          "default": "fast"
+        },
+        "payment_outcome": {
+          "oneOf": [
+            { "type": "string", "enum": ["success", "declined", "timeout", "3ds_required"] },
+            {
+              "type": "object",
+              "properties": {
+                "sequence": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["success", "declined", "timeout", "3ds_required"]
+                  },
+                  "minItems": 1
+                }
+              },
+              "required": ["sequence"]
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["success", "declined", "timeout", "3ds_required"]
+              },
+              "minItems": 1
+            }
+          ]
+        },
+        "server_error_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "server_error_paths": { "type": "array", "items": { "type": "string" } },
+        "session_ttl_s": { "type": ["integer", "null"], "minimum": 1 },
+        "frozen_time_iso": { "type": ["string", "null"] }
+      }
+    },
+    "success": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["type", "query", "predicate"],
+          "properties": {
+            "type": { "const": "state_predicate" },
+            "query": { "type": "string", "minLength": 4 },
+            "predicate": {
+              "type": "string",
+              "description": "Python expression using `result` (single scalar) or `rows` (list of dicts)"
+            },
+            "also_assert": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["type", "module", "function"],
+          "properties": {
+            "type": { "const": "python" },
+            "module": { "type": "string" },
+            "function": { "type": "string" }
+          }
+        }
+      ]
+    },
+    "budget": {
+      "type": "object",
+      "properties": {
+        "max_steps": { "type": "integer", "minimum": 1, "default": 30 },
+        "max_tokens": { "type": "integer", "minimum": 0, "default": 100000 },
+        "max_wall_clock_s": { "type": "integer", "minimum": 1, "default": 180 }
+      }
+    },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "description": { "type": "string" }
+  }
+}

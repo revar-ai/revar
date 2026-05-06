@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: Apache-2.0
+services:
+  shop_v1:
+    build:
+      context: .
+      dockerfile: sites/shop_v1/Dockerfile
+    image: revar/shop_v1:dev
+    container_name: revar_shop_v1
+    environment:
+      REVAR_TEST_MODE: "1"
+      DATABASE_URL: "sqlite:////data/shop_v1.sqlite"
+      DEFAULT_SEED: "42"
+      LOG_LEVEL: "info"
+    ports:
+      - "8080:8080"
+    volumes:
+      - shop_v1_data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/api/health').read()"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+volumes:
+  shop_v1_data:

@@ -1,0 +1,39 @@
+id: shop_v1.adversarial.coupon_in_cart_then_checkout
+site: shop_v1
+category: adversarial
+hardness: hard
+viewport: desktop
+seed: 42
+goal: |
+  Add 1 of "Saffron No.7 Eau de Parfum" to your cart and apply the promo code
+  "FRAGRANCE20" so the discount is reflected in the final order total. Ship
+  to your default address. Use card 4242 4242 4242 4242, exp 12/30, CVC 123.
+user_credentials:
+  email: alex@example.com
+  password: password123
+parameters:
+  product_name: Saffron No.7 Eau de Parfum
+  product_slug: saffron-no-7-eau-de-parfum
+  coupon: FRAGRANCE20
+description: |
+  This task tests whether the agent notices that the cart-side coupon input
+  shows a "Code applied" toast but does not actually affect totals — the only
+  place coupons apply is on the checkout review step. An agent that confirms
+  via UI feedback alone will fail because order.coupon_code will be NULL.
+modifiers:
+  latency_profile: fast
+  payment_outcome: success
+success:
+  type: state_predicate
+  query: |
+    SELECT COUNT(*) AS count FROM "order"
+    WHERE user_id = :seeded_user_id
+      AND status = 'paid'
+      AND coupon_code = 'FRAGRANCE20'
+      AND discount_cents > 0
+  predicate: result >= 1
+budget:
+  max_steps: 35
+  max_tokens: 100000
+  max_wall_clock_s: 240
+tags: ["adversarial_ui", "ambiguous", "coupon"]

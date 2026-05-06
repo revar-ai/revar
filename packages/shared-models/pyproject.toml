@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: Apache-2.0
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "revar-models"
+version = "0.1.0"
+description = "Shared SQLModel schema and seed logic for revar sites"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+authors = [{ name = "The revar contributors" }]
+keywords = ["revar", "ai", "agents", "evaluation"]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "sqlmodel>=0.0.16",
+    "pydantic>=2.6",
+    "faker>=24.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["revar_models"]

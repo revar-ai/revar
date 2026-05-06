@@ -1,0 +1,14 @@
+{
+  "name": "revar-stagehand-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "description": "Node.js bridge that lets revar drive Stagehand-powered agents via JSON over stdio.",
+  "scripts": {
+    "smoke": "echo '{\"goal\":\"navigate to /\",\"base_url\":\"http://localhost:8080\",\"model\":\"gpt-4o\",\"max_steps\":5,\"viewport\":\"desktop\"}' | node bridge.mjs"
+  },
+  "peerDependencies": {
+    "@browserbasehq/stagehand": "^1.0.0"
+  }
+}

@@ -1,0 +1,28 @@
+id: shop_v1.find.trailmate_water_bottle_by_filter
+site: shop_v1
+category: find
+hardness: medium
+viewport: desktop
+seed: 42
+goal: |
+  Open the Outdoors category and find the "TrailMate Water Bottle" product.
+  View the product detail page so the price and description are visible.
+  Use the category filter rather than search.
+parameters:
+  product_name: TrailMate Water Bottle
+  product_slug: trailmate-water-bottle
+  category: outdoors
+modifiers:
+  latency_profile: realistic
+success:
+  type: state_predicate
+  query: |
+    SELECT COUNT(*) AS count FROM eventlog
+    WHERE type = 'product_view'
+      AND detail LIKE '%"slug": "trailmate-water-bottle"%'
+  predicate: result >= 1
+budget:
+  max_steps: 20
+  max_tokens: 50000
+  max_wall_clock_s: 120
+tags: ["navigation", "filters"]

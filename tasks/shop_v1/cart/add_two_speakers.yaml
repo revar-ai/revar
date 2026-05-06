@@ -1,0 +1,29 @@
+id: shop_v1.cart.add_two_acme_speakers
+site: shop_v1
+category: cart
+hardness: easy
+viewport: desktop
+seed: 42
+goal: |
+  Add 2 of "Acme Bluetooth Speaker" to your shopping cart. Do not check out;
+  just leave them in the cart.
+parameters:
+  product_name: Acme Bluetooth Speaker
+  product_slug: acme-bluetooth-speaker
+  qty: 2
+modifiers:
+  latency_profile: fast
+success:
+  type: state_predicate
+  query: |
+    SELECT COUNT(*) AS count FROM cartitem ci
+    JOIN product p ON p.id = ci.product_id
+    WHERE p.slug = 'acme-bluetooth-speaker' AND ci.quantity = 2
+  predicate: result >= 1
+  also_assert:
+    - SELECT COUNT(*) FROM "order" WHERE status = 'paid' == 0
+budget:
+  max_steps: 15
+  max_tokens: 30000
+  max_wall_clock_s: 90
+tags: ["cart"]

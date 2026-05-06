@@ -1,0 +1,31 @@
+id: shop_v1.account.request_return_for_existing_order
+site: shop_v1
+category: account
+hardness: medium
+viewport: desktop
+seed: 42
+goal: |
+  First, sign in and place a successful order: buy 1 of "TrailMate Water
+  Bottle", ship to your default address, pay with card 4242 4242 4242 4242,
+  exp 12/30, CVC 123. Then, on the order details page for that order,
+  request a return with the reason "no longer needed".
+user_credentials:
+  email: alex@example.com
+  password: password123
+modifiers:
+  latency_profile: fast
+  payment_outcome: success
+success:
+  type: state_predicate
+  query: |
+    SELECT COUNT(*) AS count FROM "return" r
+    JOIN "order" o ON o.id = r.order_id
+    WHERE r.user_id = :seeded_user_id
+      AND o.status = 'paid'
+      AND r.reason LIKE '%no longer needed%'
+  predicate: result >= 1
+budget:
+  max_steps: 50
+  max_tokens: 150000
+  max_wall_clock_s: 300
+tags: ["account", "multistep", "returns"]

@@ -1,0 +1,35 @@
+id: shop_v1.checkout.lumen_smart_bulb_out_of_stock_midflow
+site: shop_v1
+category: checkout
+hardness: hard
+viewport: desktop
+seed: 42
+goal: |
+  Try to buy 1 of "Lumen Smart Bulb". You'll find it appears in search but is
+  flagged out of stock on the product page. Find a similar in-stock product
+  in the same category (Home) and complete the purchase instead. Ship to
+  your default address. Use card 4242 4242 4242 4242, exp 12/30, CVC 123.
+user_credentials:
+  email: alex@example.com
+  password: password123
+parameters:
+  blocked_product: Lumen Smart Bulb
+modifiers:
+  latency_profile: fast
+  payment_outcome: success
+success:
+  type: state_predicate
+  query: |
+    SELECT COUNT(*) AS count FROM "order"
+    WHERE user_id = :seeded_user_id
+      AND status = 'paid'
+      AND id NOT IN (
+        SELECT order_id FROM orderitem
+        WHERE product_name = 'Lumen Smart Bulb'
+      )
+  predicate: result >= 1
+budget:
+  max_steps: 50
+  max_tokens: 150000
+  max_wall_clock_s: 300
+tags: ["checkout", "out_of_stock", "recovery", "hard"]
