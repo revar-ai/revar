@@ -120,22 +120,18 @@ docker compose up -d shop_v1
 python examples/run_stagehand.py tasks/shop_v1/find/find_acme_bluetooth_speaker.yaml
 ```
 
-Common failures and what they mean:
-- `Node binary `node` not on PATH` — install Node 20+ or set `node_bin` on `StagehandAdapter`.
-- `Stagehand is not installed` (exit 2 from the bridge) — you skipped `npm install` in `adapters/stagehand/`.
-- `OPENAI_API_KEY is not set` — the bridge model needs it; export it before running.
-
 ## Authoring your own task
 
 The fastest path is to clone an existing failure-mode template:
 
 ```bash
 revar task from-template checkout/payment_declined_recovery \
-    --product "Acme Bluetooth Speaker" \
+    -p product_name="Acme Bluetooth Speaker" \
+    -p product_slug=acme-bluetooth-speaker \
     --out tasks/shop_v1/checkout/
 
-revar task validate tasks/shop_v1/checkout/payment_declined_recovery.yaml
-revar task try    tasks/shop_v1/checkout/payment_declined_recovery.yaml
+revar task validate tasks/shop_v1/checkout/acme_bluetooth_speaker_payment_declined_recovery.yaml
+revar task try      tasks/shop_v1/checkout/acme_bluetooth_speaker_payment_declined_recovery.yaml
 ```
 
 Or write YAML by hand — see [`docs/architecture.md`](docs/architecture.md#task-yaml) for the schema.
@@ -144,7 +140,6 @@ Or write YAML by hand — see [`docs/architecture.md`](docs/architecture.md#task
 
 revar is licensed under the **Apache License 2.0**. See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE).
 
-You can use, modify, and redistribute revar — including in proprietary or commercial products — provided you retain the copyright notice and the required attribution from `NOTICE`. Apache 2.0 also includes an explicit patent grant from contributors.
 
 ## Contributing
 
