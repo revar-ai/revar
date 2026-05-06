@@ -24,6 +24,8 @@ Real websites are flaky, expensive, rate-limited, and hostile to automated traff
 - **Adapters** — `browser-use` (DOM/AX-tree native), `stagehand` (via Node subprocess), and a vision-only baseline. All optional installs.
 - **Trajectory recording** — Per-step DOM snapshots, screenshots, agent actions, token counts, latencies. Deterministic via SQLite snapshot reset and seeded faker.
 
+v0 ships a single site — `shop_v1` — to keep the focus on getting the abstractions (`Environment`, modifiers, success predicates, the `/__test__/*` admin protocol) right against several adapters. E-commerce was picked because it exercises forms, multi-step flows, auth, money, and obvious failure-mode hooks in a small amount of code. Adding more sites is now content work, not platform work — see [Adding a new site](#adding-a-new-site).
+
 ## 5-minute quickstart
 
 Prerequisites: Python 3.11+, Docker, Node 20+ (only if you plan to use the Stagehand adapter), and Chromium for Playwright.
@@ -213,6 +215,12 @@ The contract is intentionally small. A modifier is just a key in `ModifierConfig
 5. **(Optional) Update the task JSON Schema** at `packages/core-py/revar/schemas/task.schema.json` if you want strict validation of the new key.
 
 A good first example to copy is `LatencyMiddleware` (one file, ~30 lines) — it shows the read-config-and-act pattern end-to-end.
+
+## Adding a new site
+
+A site is just an HTTP service that implements six admin endpoints — `GET /api/health`, `POST /__test__/{reset,configure,query,freeze_time}`, and `GET /__test__/state` — guarded by `REVAR_TEST_MODE=1`. The contract is HTTP-shaped, so any backend stack works.
+
+To add one: scaffold under `sites/<your_site>/`, add a deterministic seeder under `packages/shared-models/revar_models/<your_site>/`, register a service block in `docker-compose.yml`, and drop tasks under `tasks/<your_site>/` with `site: <your_site>` in the YAML. Copy from `shop_v1` — `app/modifiers.py` and `api/test_endpoints.py` are near-verbatim reusable. Contributions welcome.
 
 ## License
 
