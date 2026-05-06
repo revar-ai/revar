@@ -3,7 +3,7 @@
 </h1>
 
 <p align="center">
-  <strong>A deterministic, reproducible test platform for AI browser agents</strong>
+  <strong>A deterministic, reproducible test environment for AI browser agents</strong>
 </p>
 
 <div align="center">
