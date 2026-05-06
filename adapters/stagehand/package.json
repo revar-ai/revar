@@ -9,6 +9,6 @@
     "smoke": "echo '{\"goal\":\"navigate to /\",\"base_url\":\"http://localhost:8080\",\"model\":\"gpt-4o\",\"max_steps\":5,\"viewport\":\"desktop\"}' | node bridge.mjs"
   },
   "peerDependencies": {
-    "@browserbasehq/stagehand": "^1.0.0"
+    "@browserbasehq/stagehand": "^1.14.0"
   }
 }
