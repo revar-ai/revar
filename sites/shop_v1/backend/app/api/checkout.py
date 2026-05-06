@@ -11,6 +11,8 @@ from __future__ import annotations
 import asyncio
 from datetime import datetime
 
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, Field
 from revar_models.shop_v1.models import (
     Address,
     Cart,
@@ -21,8 +23,6 @@ from revar_models.shop_v1.models import (
     PaymentAttempt,
     Product,
 )
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
 from sqlmodel import select
 
 from ..deps import CSRF, DB, CurrentUser, SessionDep

@@ -6,15 +6,14 @@ from __future__ import annotations
 from collections.abc import Iterator
 from typing import Annotated
 
+from fastapi import Depends, Header, HTTPException, Request, status
 from revar_models.shop_v1.models import Session as SessionRow
 from revar_models.shop_v1.models import User
-from fastapi import Depends, Header, HTTPException, Request, status
 from sqlmodel import Session as DBSession
 from sqlmodel import create_engine
 
 from .auth import create_session, is_session_valid, session_by_token
 from .config import get_settings
-
 
 _engine = None
 

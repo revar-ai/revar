@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-from revar_models.shop_v1.models import User
 from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel, EmailStr, Field
+from revar_models.shop_v1.models import User
 from sqlmodel import select
 
 from ..auth import create_session, hash_password, verify_password

@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from playwright.async_api import BrowserContext
@@ -43,9 +43,9 @@ class Adapter(ABC):
     async def run(
         self,
         *,
-        task: "Task",
-        env: "Environment",
-        context: "BrowserContext",
-        trajectory: "Trajectory",
+        task: Task,
+        env: Environment,
+        context: BrowserContext,
+        trajectory: Trajectory,
     ) -> AdapterResult:
         ...

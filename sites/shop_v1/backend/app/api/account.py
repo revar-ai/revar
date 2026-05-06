@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-from revar_models.shop_v1.models import Address, Order, OrderItem, Return
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
+from revar_models.shop_v1.models import Address, Order, OrderItem, Return
 from sqlmodel import func, select
 
 from ..deps import CSRF, DB, CurrentUser

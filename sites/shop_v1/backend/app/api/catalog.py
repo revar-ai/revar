@@ -6,8 +6,8 @@ from __future__ import annotations
 import base64
 import json
 
-from revar_models.shop_v1.models import Category, EventLog, Product
 from fastapi import APIRouter, HTTPException, Query, Request
+from revar_models.shop_v1.models import Category, EventLog, Product
 from sqlmodel import func, or_, select
 
 from ..config import get_settings
@@ -116,7 +116,7 @@ def _decode_cursor(cursor: str) -> int:
     try:
         data = json.loads(base64.urlsafe_b64decode(cursor + pad))
         return int(data.get("i", 0))
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         raise HTTPException(status_code=400, detail="invalid_cursor") from exc
 
 

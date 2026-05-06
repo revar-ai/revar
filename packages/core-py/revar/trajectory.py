@@ -39,7 +39,7 @@ class Trajectory:
     output_dir: Path | None = None
 
     @classmethod
-    def for_task(cls, task_id: str, agent: str, root: str | Path = "trajectories") -> "Trajectory":
+    def for_task(cls, task_id: str, agent: str, root: str | Path = "trajectories") -> Trajectory:
         ts = datetime.utcfromtimestamp(time.time()).strftime("%Y%m%dT%H%M%S")
         slug = task_id.replace("/", "_").replace(".", "_")
         dirname = Path(root) / f"{ts}_{agent}_{slug}"

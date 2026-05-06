@@ -7,10 +7,8 @@ from pathlib import Path
 
 import pytest
 import yaml
-
 from revar.task import Task, validate_task_dict
-from revar.templating import render_template_to_dict, parse_template_header
-
+from revar.templating import parse_template_header, render_template_to_dict
 
 REPO = Path(__file__).resolve().parents[3]
 

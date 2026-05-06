@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import random
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from faker import Faker
 from sqlmodel import Session as DBSession
@@ -260,4 +260,4 @@ def seeded_user_id(database_url: str) -> int:
         return u.id
 
 
-__all__ = ["seed_database", "seeded_user_id", "ANCHOR_PRODUCTS", "COUPONS", "CATEGORIES"]
+__all__ = ["ANCHOR_PRODUCTS", "CATEGORIES", "COUPONS", "seed_database", "seeded_user_id"]

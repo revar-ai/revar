@@ -10,9 +10,9 @@ This is one of the deliberate adversarial-UI dimensions in shop_v1.
 
 from __future__ import annotations
 
-from revar_models.shop_v1.models import Cart, CartItem, Coupon, Product
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
+from revar_models.shop_v1.models import Cart, CartItem, Product
 from sqlmodel import select
 
 from ..deps import CSRF, DB, SessionDep

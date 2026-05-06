@@ -17,7 +17,6 @@ from dataclasses import dataclass
 
 from .base import Adapter, AdapterResult
 
-
 SYSTEM_PROMPT = """You control a web browser by issuing ONE action per turn.
 Available actions (return strict JSON, nothing else):
   {"action": "nav", "url": "<absolute or path>"}
@@ -88,7 +87,7 @@ class VisionBaselineAdapter(Adapter):
                 start = content.find("{")
                 end = content.rfind("}")
                 action = json.loads(content[start : end + 1])
-            except Exception:  # noqa: BLE001
+            except Exception:
                 trajectory.append(
                     Step(
                         index=i,
@@ -138,7 +137,7 @@ class VisionBaselineAdapter(Adapter):
                         )
                     )
                     break
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 trajectory.append(
                     Step(
                         index=i,

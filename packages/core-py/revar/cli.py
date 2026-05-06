@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import asyncio
 import importlib.util
-import json
 import sys
 from pathlib import Path
 from typing import Any
@@ -82,7 +81,7 @@ def task_list(root: str | None) -> None:
                     str(path.relative_to(base.parent)),
                 )
             )
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             rows.append(("INVALID", "?", "?", f"{path}: {exc}"))
     table = Table(title=f"Tasks under {base}")
     table.add_column("id")
@@ -115,7 +114,7 @@ def task_validate(path: str, base_url: str | None, skip_live: bool) -> None:
     try:
         r = httpx.get(f"{url}/api/health", timeout=5)
         r.raise_for_status()
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         console.print(f"[yellow]Live-site checks skipped (site unreachable at {url}: {exc})[/yellow]")
         return
 
@@ -233,7 +232,7 @@ def task_try(path: str, base_url: str | None, headed: bool) -> None:
         console.print(f"[red]{scripted} must define an async run(task, env, context, trajectory) function[/red]")
         sys.exit(2)
 
-    from .adapters.base import Adapter, AdapterResult
+    from .adapters.base import Adapter
     from .runner import Runner
 
     class _ScriptedAdapter(Adapter):

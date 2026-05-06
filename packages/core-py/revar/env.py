@@ -60,7 +60,7 @@ class Environment:
         if r.status_code != 200:
             try:
                 detail = r.json()
-            except Exception:  # noqa: BLE001
+            except Exception:
                 detail = r.text
             raise RuntimeError(f"query failed: {detail}")
         return r.json().get("rows", [])

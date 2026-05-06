@@ -81,7 +81,7 @@ class StagehandAdapter(Adapter):
         if stdout:
             try:
                 payload = json.loads(stdout.decode().splitlines()[-1])
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 parse_err = exc
 
         if proc.returncode != 0:

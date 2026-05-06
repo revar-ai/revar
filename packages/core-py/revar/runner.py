@@ -57,9 +57,9 @@ class Runner:
                     agent.run(task=task, env=self.env, context=ctx, trajectory=traj),
                     timeout=budget_s + 5,
                 )
-        except asyncio.TimeoutError:
-            traj.append_error(asyncio.TimeoutError(f"exceeded budget {task.budget.max_wall_clock_s}s"))
-        except Exception as exc:  # noqa: BLE001
+        except TimeoutError:
+            traj.append_error(TimeoutError(f"exceeded budget {task.budget.max_wall_clock_s}s"))
+        except Exception as exc:
             traj.append_error(exc)
 
         # Capture final URL from the last recorded step

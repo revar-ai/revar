@@ -3,7 +3,7 @@
 
 from .adapters.base import Action, Adapter, AdapterResult
 from .env import Environment
-from .runner import RunResult, Runner
+from .runner import Runner, RunResult
 from .task import EvalResult, Task, TaskGenerator
 from .trajectory import Step, Trajectory
 

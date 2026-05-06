@@ -12,11 +12,11 @@ import logging
 import os
 from pathlib import Path
 
-from revar_models.shop_v1 import seed_database
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
+from revar_models.shop_v1 import seed_database
 
 from .api import account as account_api
 from .api import auth as auth_api

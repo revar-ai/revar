@@ -10,12 +10,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from revar_models.shop_v1 import StateReader, seed_database
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from revar_models.shop_v1 import seed_database
 from sqlalchemy import text
-from sqlmodel import Session as DBSession
-from sqlmodel import select
 
 from ..config import get_settings
 from ..deps import get_engine, reset_engine
@@ -87,7 +85,7 @@ def state(table: str | None = None) -> dict:
                 try:
                     n = conn.execute(text(f'SELECT COUNT(*) FROM "{tbl}"')).scalar()
                     counts[tbl] = int(n or 0)
-                except Exception:  # noqa: BLE001
+                except Exception:
                     counts[tbl] = -1
             return {
                 "modifiers": get_config().to_dict(),
@@ -152,7 +150,7 @@ def query(payload: QueryPayload) -> dict:
         try:
             result = conn.execute(text(sql), payload.params or {})
             rows = list(result)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             raise HTTPException(status_code=400, detail=f"query_error: {exc}") from exc
         return {
             "rows": [dict(r._mapping) if hasattr(r, "_mapping") else {"value": r} for r in rows],
