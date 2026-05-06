@@ -1,14 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 name: CI
 
-# Auto-run on push/PR is temporarily disabled while pre-launch CI work is in
-# progress. Re-enable by uncommenting the triggers below. In the meantime,
-# trigger runs manually from the Actions tab via "Run workflow".
 on:
-  workflow_dispatch:
-  # push:
-  #   branches: [main]
-  # pull_request:
+  push:
+    branches: [main]
+  pull_request:
 
 jobs:
   python:
