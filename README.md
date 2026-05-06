@@ -2,7 +2,7 @@
 
 A deterministic, reproducible test environment for AI browser agents.
 
-Real websites are flaky, expensive, rate-limited, and CAPTCHA-protected. Static-HTML benchmarks lack state and dynamic behavior. revar is a synthetic e-commerce site (and the framework around it) that gives your browser agent a realistic, stateful, instrumented playground — locally, in Docker, in 5 minutes.
+Real websites are flaky, expensive, rate-limited, and hostile to automated traffic. Static-HTML benchmarks lack state and dynamic behavior. Revar gives your browser agent a realistic, stateful, instrumented playground — locally, in Docker, in 5 minutes.
 
 ## What's in v0
 
@@ -21,7 +21,7 @@ Prerequisites: Python 3.11+, Docker, Node 20+ (only if you plan to use the Stage
 pip install 'revar[browser-use]'
 
 # --- Local-development install (use this until revar is published to PyPI) ---
-# git clone https://github.com/<org>/revar
+# git clone https://github.com/revar-ai/revar
 # cd revar
 # python3.11 -m venv .venv && source .venv/bin/activate
 # pip install -e packages/shared-models
