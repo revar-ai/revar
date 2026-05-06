@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import base64
 import json
+import os
 import time
 from dataclasses import dataclass
 
@@ -54,6 +55,10 @@ class VisionBaselineAdapter(Adapter):
         tokens_in = 0
         tokens_out = 0
         actions = 0
+        # Stream actions to stdout so you can watch the agent reason in real
+        # time (and see when it's stuck in a loop). Off by default; opt in
+        # with REVAR_DEBUG=1 to keep CI logs clean.
+        verbose = os.environ.get("REVAR_DEBUG", "").lower() in ("1", "true", "yes")
 
         for i in range(max_steps):
             shot_bytes = await page.screenshot(type="png", full_page=False)
@@ -100,6 +105,12 @@ class VisionBaselineAdapter(Adapter):
 
             actions += 1
             atype = action.get("action", "other")
+            if verbose:
+                summary = {k: v for k, v in action.items() if k != "action"}
+                print(
+                    f"[vision_baseline] step {i + 1}/{max_steps}: {atype} {summary} @ {url}",
+                    flush=True,
+                )
             try:
                 if atype == "nav":
                     target = action.get("url", "/")
