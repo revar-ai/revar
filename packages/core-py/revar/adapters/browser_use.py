@@ -58,11 +58,22 @@ class BrowserUseAdapter(Adapter):
                 "OPENAI_API_KEY is not set. The browser-use adapter uses OpenAI by default."
             )
 
+        # Pre-navigation: skip the LLM's first "go_to_url" step by warming
+        # the session at base_url ourselves. Saves ~3-8s per task. Disable
+        # via REVAR_BROWSER_USE_NO_PRENAV=1 if you want to *see* the
+        # navigation animate (e.g., during a demo).
+        prenav = os.environ.get("REVAR_BROWSER_USE_NO_PRENAV", "").lower() not in ("1", "true", "yes")
+
         prompt_lines = [
             f"You are interacting with a synthetic e-commerce site at {env.base_url}.",
-            f"Begin by navigating to {env.base_url}/.",
-            f"Goal: {task.goal.strip()}",
         ]
+        if prenav:
+            prompt_lines.append(
+                f"You are already on the homepage at {env.base_url}/."
+            )
+        else:
+            prompt_lines.append(f"Begin by navigating to {env.base_url}/.")
+        prompt_lines.append(f"Goal: {task.goal.strip()}")
         if task.user_credentials:
             prompt_lines.append(
                 f"If you need to sign in, use email '{task.user_credentials['email']}' "
@@ -79,6 +90,15 @@ class BrowserUseAdapter(Adapter):
                 viewport=viewport,
             ),
         )
+
+        if prenav:
+            try:
+                await browser_session.start()
+                await browser_session.navigate_to(env.base_url + "/")
+            except Exception as exc:  # noqa: BLE001
+                # Pre-nav is best-effort; fall back to letting the agent navigate.
+                if os.environ.get("REVAR_DEBUG"):
+                    print(f"[revar.browser_use] prenav failed, agent will navigate: {exc!r}", flush=True)
 
         agent = Agent(
             task=prompt,
