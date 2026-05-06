@@ -222,6 +222,10 @@ A site is just an HTTP service that implements six admin endpoints — `GET /api
 
 To add one: scaffold under `sites/<your_site>/`, add a deterministic seeder under `packages/shared-models/revar_models/<your_site>/`, register a service block in `docker-compose.yml`, and drop tasks under `tasks/<your_site>/` with `site: <your_site>` in the YAML. Copy from `shop_v1` — `app/modifiers.py` and `api/test_endpoints.py` are near-verbatim reusable. Contributions welcome.
 
+## Releasing
+
+Cut a release by bumping versions with `scripts/bump_version.py X.Y.Z`, updating `CHANGELOG.md`, and pushing a `vX.Y.Z` tag. CI handles the PyPI upload (via Trusted Publishing) and the GitHub Release. Full runbook in [`RELEASING.md`](RELEASING.md).
+
 ## License
 
 revar is licensed under the **Apache License 2.0**. See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE).
