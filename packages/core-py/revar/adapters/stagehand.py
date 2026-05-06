@@ -70,19 +70,41 @@ class StagehandAdapter(Adapter):
         )
         stdout, stderr = await proc.communicate(input=(json.dumps(request) + "\n").encode())
 
-        if proc.returncode != 0:
-            raise RuntimeError(
-                f"Stagehand bridge exited with code {proc.returncode}: {stderr.decode(errors='replace')}"
-            )
-
+        # The bridge writes its error JSON to stdout (so we can recover a
+        # structured ``error`` field) and exits non-zero. Try to parse stdout
+        # FIRST so we surface a useful message; fall back to stderr only if
+        # stdout is empty/unparseable.
         from revar.trajectory import Step
 
-        try:
-            payload = json.loads(stdout.decode().splitlines()[-1])
-        except Exception as exc:  # noqa: BLE001
+        payload: dict | None = None
+        parse_err: Exception | None = None
+        if stdout:
+            try:
+                payload = json.loads(stdout.decode().splitlines()[-1])
+            except Exception as exc:  # noqa: BLE001
+                parse_err = exc
+
+        if proc.returncode != 0:
+            bridge_error = (payload or {}).get("error") if payload else None
+            stderr_text = stderr.decode(errors="replace").strip()
+            hint = ""
+            if proc.returncode == 2 and not bridge_error:
+                hint = (
+                    " (exit 2 typically means Stagehand isn't installed — "
+                    "run `cd adapters/stagehand && npm install @browserbasehq/stagehand`)"
+                )
             raise RuntimeError(
-                f"Could not parse stagehand bridge output: {exc}\nstdout={stdout!r}\nstderr={stderr!r}"
-            ) from exc
+                "Stagehand bridge exited with code "
+                f"{proc.returncode}.{hint}\n"
+                f"  bridge_error: {bridge_error!r}\n"
+                f"  stderr: {stderr_text!r}"
+            )
+
+        if payload is None:
+            raise RuntimeError(
+                f"Could not parse stagehand bridge output: {parse_err}\n"
+                f"stdout={stdout!r}\nstderr={stderr!r}"
+            )
 
         for i, item in enumerate(payload.get("steps") or []):
             trajectory.append(

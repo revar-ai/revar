@@ -59,6 +59,24 @@ async function main() {
   await stagehand.init();
   const page = stagehand.page;
 
+  // Stagehand 1.x doesn't expose aggregated token usage publicly, but every
+  // LLMClient subclass populates response.usage on each createChatCompletion
+  // call. Wrap the method to accumulate tokens across the run.
+  let tokens_in = 0;
+  let tokens_out = 0;
+  if (stagehand.llmClient && typeof stagehand.llmClient.createChatCompletion === "function") {
+    const originalCreate = stagehand.llmClient.createChatCompletion.bind(stagehand.llmClient);
+    stagehand.llmClient.createChatCompletion = async (opts) => {
+      const result = await originalCreate(opts);
+      const usage = result && (result.usage || (result.data && result.data.usage));
+      if (usage) {
+        tokens_in += Number(usage.prompt_tokens || usage.input_tokens || 0) || 0;
+        tokens_out += Number(usage.completion_tokens || usage.output_tokens || 0) || 0;
+      }
+      return result;
+    };
+  }
+
   // Pre-auth via API (so the agent doesn't have to sign in)
   if (req.credentials) {
     try {
@@ -78,8 +96,6 @@ async function main() {
   await page.goto(req.base_url + "/");
 
   const steps = [];
-  let tokens_in = 0;
-  let tokens_out = 0;
 
   try {
     const result = await stagehand.act({ action: req.goal });
@@ -87,8 +103,6 @@ async function main() {
       type: "stagehand_act",
       action: { goal: req.goal, result: String(result).slice(0, 500) },
       url: page.url(),
-      tokens_in: 0,
-      tokens_out: 0,
     });
   } catch (err) {
     steps.push({
@@ -102,9 +116,7 @@ async function main() {
     await stagehand.close();
   } catch {}
 
-  process.stdout.write(
-    JSON.stringify({ steps, tokens_in, tokens_out }) + "\n",
-  );
+  process.stdout.write(JSON.stringify({ steps, tokens_in, tokens_out }) + "\n");
 }
 
 main().catch((err) => {
