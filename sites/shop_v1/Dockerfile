@@ -8,6 +8,10 @@ WORKDIR /build
 COPY sites/shop_v1/frontend/package.json sites/shop_v1/frontend/package-lock.json* ./
 RUN npm install --no-audit --no-fund
 COPY sites/shop_v1/frontend ./
+# DIAGNOSTIC: dump the lib directory so we can see in CI logs whether
+# format.ts is making it into the build context. Remove once the
+# missing-module error is resolved.
+RUN ls -la /build/src/lib/ && cat /build/src/lib/format.ts | head -3 || true
 RUN npm run build
 
 # ---------------- Backend runtime ----------------
