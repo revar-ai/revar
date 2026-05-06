@@ -52,7 +52,7 @@ async function main() {
   const stagehand = new Stagehand({
     env: "LOCAL",
     modelName: req.model || "gpt-4o",
-    headless: true,
+    headless: req.headless !== false,
     enableCaching: false,
   });
 

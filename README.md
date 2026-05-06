@@ -41,6 +41,10 @@ revar task list
 # 5. Run a task with the browser-use adapter
 export OPENAI_API_KEY=sk-...
 python examples/run_browser_use.py tasks/shop_v1/find/find_product_by_name.yaml
+
+# Tip: set REVAR_HEADED=1 to watch the browser drive in a visible window.
+#   REVAR_HEADED=1 python examples/run_browser_use.py <task.yaml>
+# Works for all four example runners (browser-use, scripted, vision, stagehand).
 ```
 
 You should see something like:

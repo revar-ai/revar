@@ -32,6 +32,7 @@ class StagehandAdapter(Adapter):
     bridge_path: str | None = None
     node_bin: str = "node"
     model: str = "gpt-4o"
+    headless: bool = True
 
     async def run(self, *, task, env, context, trajectory) -> AdapterResult:
         if shutil.which(self.node_bin) is None:
@@ -55,6 +56,7 @@ class StagehandAdapter(Adapter):
             "model": self.model,
             "max_steps": task.budget.max_steps,
             "viewport": task.viewport,
+            "headless": self.headless,
         }
         if task.user_credentials:
             request["credentials"] = task.user_credentials

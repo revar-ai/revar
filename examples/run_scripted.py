@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import importlib.util
+import os
 import sys
 from pathlib import Path
 
@@ -47,9 +48,10 @@ async def main(task_path: str) -> int:
         async def run(self, *, task, env, context, trajectory):
             return await module.run(task=task, env=env, context=context, trajectory=trajectory)
 
+    headed = os.environ.get("REVAR_HEADED", "").lower() in ("1", "true", "yes")
     env = Environment(site=task.site)
     runner = Runner(env)
-    result = await runner.run(agent=_ScriptedAdapter(), task=task)
+    result = await runner.run(agent=_ScriptedAdapter(), task=task, headless=not headed)
     print(f"passed={result.eval.passed} reason={result.eval.reason}")
     for k, v in result.metrics.items():
         print(f"  {k}: {v}")

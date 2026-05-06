@@ -10,6 +10,7 @@ Usage:
 from __future__ import annotations
 
 import asyncio
+import os
 import sys
 
 from revar import Environment, Runner, Task
@@ -23,8 +24,15 @@ async def main(task_path: str) -> int:
     print(f"[revar] site healthy: {health.get('ok')}")
     print(f"[revar] running browser-use on {task.id}")
 
+    headed = os.environ.get("REVAR_HEADED", "").lower() in ("1", "true", "yes")
+    headless = not headed
+
     runner = Runner(env)
-    result = await runner.run(agent=BrowserUseAdapter(), task=task)
+    result = await runner.run(
+        agent=BrowserUseAdapter(headless=headless),
+        task=task,
+        headless=headless,
+    )
 
     print()
     print(f"[revar] passed={result.eval.passed}  reason={result.eval.reason}")
