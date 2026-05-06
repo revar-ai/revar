@@ -6,10 +6,11 @@ from __future__ import annotations
 import importlib
 import json
 import re
+from collections.abc import Iterable
 from dataclasses import asdict, dataclass, field
 from itertools import product
 from pathlib import Path
-from typing import Any, Callable, Iterable
+from typing import Any
 
 import yaml
 from jsonschema import Draft202012Validator
@@ -62,14 +63,14 @@ class Task:
     # ------------------------------------------------------------------
 
     @classmethod
-    def from_yaml(cls, path: str | Path) -> "Task":
+    def from_yaml(cls, path: str | Path) -> Task:
         p = Path(path)
         data = yaml.safe_load(p.read_text())
         validate_task_dict(data)
         return cls.from_dict(data, source_path=p)
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any], *, source_path: Path | None = None) -> "Task":
+    def from_dict(cls, data: dict[str, Any], *, source_path: Path | None = None) -> Task:
         budget_data = data.get("budget") or {}
         return cls(
             id=data["id"],
@@ -98,7 +99,7 @@ class Task:
     # Evaluation
     # ------------------------------------------------------------------
 
-    def evaluate(self, env: "Environment") -> EvalResult:  # noqa: F821
+    def evaluate(self, env: Environment) -> EvalResult:  # noqa: F821
         success_type = self.success.get("type")
         if success_type == "state_predicate":
             return self._eval_state_predicate(env)
@@ -117,12 +118,12 @@ class Task:
         rendered_sql = substitute_bindings(sql, bindings)
         rows = env.query(rendered_sql)
         result = rows[0]["count"] if (rows and "count" in rows[0]) else (
-            list(rows[0].values())[0] if rows else None
+            next(iter(rows[0].values())) if rows else None
         )
 
         try:
             primary = bool(eval(predicate, {"__builtins__": {}}, {"result": result, "rows": rows}))
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             return EvalResult(False, f"predicate_error:{exc}", {"sql": rendered_sql})
 
         details: dict[str, Any] = {"primary_query": rendered_sql, "primary_rows": rows}
@@ -166,7 +167,7 @@ def _evaluate_assertion(clause: str, env) -> tuple[bool, str]:
     rows = env.query(sql)
     if not rows:
         return False, "no_rows"
-    val = list(rows[0].values())[0]
+    val = next(iter(rows[0].values()))
     op = m.group("op")
     cmp = {
         "==": lambda a, b: a == b,
@@ -223,7 +224,7 @@ class TaskGenerator:
     parameters: dict[str, list[Any]]
     base_overrides: dict[str, Any] = field(default_factory=dict)
 
-    def generate(self) -> Iterable["Task"]:
+    def generate(self) -> Iterable[Task]:
         from .templating import render_template_to_dict
 
         keys = list(self.parameters.keys())

@@ -23,6 +23,7 @@ Compatibility notes
 
 from __future__ import annotations
 
+import contextlib
 import os
 import time
 from dataclasses import dataclass
@@ -95,7 +96,7 @@ class BrowserUseAdapter(Adapter):
             try:
                 await browser_session.start()
                 await browser_session.navigate_to(env.base_url + "/")
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 # Pre-nav is best-effort; fall back to letting the agent navigate.
                 if os.environ.get("REVAR_DEBUG"):
                     print(f"[revar.browser_use] prenav failed, agent will navigate: {exc!r}", flush=True)
@@ -134,7 +135,7 @@ class BrowserUseAdapter(Adapter):
                             f"entries={entries} prompt={tokens_in} completion={tokens_out}",
                             flush=True,
                         )
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 if os.environ.get("REVAR_DEBUG"):
                     print(f"[revar.browser_use] token fallback failed: {exc!r}", flush=True)
 
@@ -147,10 +148,8 @@ class BrowserUseAdapter(Adapter):
 
         for i, item in enumerate(getattr(history, "history", []) or []):
             url = None
-            try:
+            with contextlib.suppress(Exception):
                 url = item.state.url  # type: ignore[attr-defined]
-            except Exception:  # noqa: BLE001
-                pass
 
             # ``model_output.action`` is a list[ActionModel]; pick the first
             # so we have *something* to record. Each ActionModel is a
@@ -161,7 +160,7 @@ class BrowserUseAdapter(Adapter):
                 actions = item.model_output.action if item.model_output else []  # type: ignore[attr-defined]
                 if actions:
                     action_obj = actions[0]
-            except Exception:  # noqa: BLE001
+            except Exception:
                 pass
 
             action_type = "browser_use_action"
@@ -170,7 +169,7 @@ class BrowserUseAdapter(Adapter):
                 try:
                     dumped = action_obj.model_dump(exclude_none=True)
                     action_type = next(iter(dumped.keys()), "browser_use_action")
-                except Exception:  # noqa: BLE001
+                except Exception:
                     action_type = type(action_obj).__name__
 
             trajectory.append(
@@ -186,11 +185,9 @@ class BrowserUseAdapter(Adapter):
         try:
             await browser_session.kill()  # 0.12 API; falls back to close() below
         except AttributeError:  # pragma: no cover
-            try:
+            with contextlib.suppress(Exception):
                 await browser_session.close()
-            except Exception:  # noqa: BLE001
-                pass
-        except Exception:  # noqa: BLE001
+        except Exception:
             pass
 
         return AdapterResult(
