@@ -1,0 +1,46 @@
+# SPDX-License-Identifier: Apache-2.0
+# Keep the Docker build context tight so:
+#  (1) layer hashes are deterministic across machines
+#  (2) BuildKit doesn't have to scan irrelevant trees on every build
+#  (3) we don't accidentally bake host-side venvs / caches into the image
+#
+# Anything used by the multi-stage Dockerfile (sites/shop_v1/* and
+# packages/shared-models/) must NOT be ignored here.
+
+# Python virtualenvs and caches
+.venv/
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Node
+**/node_modules/
+**/dist/
+**/.next/
+**/.turbo/
+
+# OS / editor cruft
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# revar-specific output
+trajectories/
+*.sqlite
+*.sqlite-*
+
+# VCS
+.git/
+.gitignore
+
+# Documentation we don't ship inside images
+docs/
+examples/
+templates/
+tasks/
+adapters/stagehand/node_modules/
