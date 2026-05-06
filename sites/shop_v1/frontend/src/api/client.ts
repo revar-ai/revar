@@ -45,7 +45,7 @@ export async function api<T = unknown>(path: string, opts: RequestOptions = {}):
     ...(opts.headers ?? {}),
   };
   if (opts.body !== undefined) headers["Content-Type"] = "application/json";
-  if (method !== "GET" && method !== "HEAD") {
+  if (method !== "GET") {
     const csrf = getCsrfCookie();
     if (csrf) headers["X-CSRF-Token"] = csrf;
   }
