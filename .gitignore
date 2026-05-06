@@ -12,8 +12,10 @@ develop-eggs/
 dist/
 downloads/
 eggs/
-lib/
-lib64/
+# Python setuptools build dirs — anchored so they don't sweep up
+# legitimate nested "lib/" dirs (e.g. frontend/src/lib).
+/lib/
+/lib64/
 parts/
 sdist/
 var/

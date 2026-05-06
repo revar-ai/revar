@@ -136,6 +136,72 @@ revar task try      tasks/shop_v1/checkout/acme_bluetooth_speaker_payment_declin
 
 Or write YAML by hand — see [`docs/architecture.md`](docs/architecture.md#task-yaml) for the schema.
 
+## Modifiers (failure-mode injection)
+
+Modifiers are how a task says "make the site behave like X." They're set under `modifiers:` in the task YAML, and revar applies them at reset time via `POST /__test__/configure`. Nothing in `shop_v1`'s product code needs to know about specific failure modes — middlewares handle them transparently.
+
+### Available modifiers
+
+| Key                  | Type                 | Values / shape                                              | Default            | Effect                                                                                          |
+|----------------------|----------------------|-------------------------------------------------------------|--------------------|-------------------------------------------------------------------------------------------------|
+| `latency_profile`    | string               | `none` \| `fast` \| `realistic` \| `slow_3g`                | `fast`             | Sleeps before each `/api/*` response per the profile's per-route (min, max) seconds.            |
+| `payment_outcome`    | string \| list \| object | `success` \| `declined` \| `3ds_required` \| `timeout`, **or** `[..., ...]` for a sequence consumed in order, **or** `{ sequence: [...] }` | `success`          | Drives `/api/checkout/confirm`. Sequences let you script "decline once, then succeed."          |
+| `server_error_rate`  | number (0.0–1.0)     | e.g. `0.1` for ~10% 503s                                    | `0.0`              | Probability of injecting a 503 on requests matching `server_error_paths`.                       |
+| `server_error_paths` | list[string]         | e.g. `["/api/products", "/api/cart"]`                       | `["/api/products"]` | URL-prefixes eligible for the error injector above.                                             |
+| `session_ttl_s`      | int \| null          | seconds                                                     | site default       | Forces a shorter session expiry — useful for testing mid-flow re-auth.                           |
+| `frozen_time_iso`    | string (ISO 8601)    | e.g. `2026-05-01T12:00:00Z`                                 | unset              | Pins server-side "now" — use it to make coupon expiry / order timestamps deterministic.          |
+
+### Example: payment-declined-then-succeed checkout
+
+```yaml
+id: shop_v1.checkout.acme_speaker_decline_recovery
+site: shop_v1
+goal: |
+  Buy 1 Acme Bluetooth Speaker. Your first payment will be declined; retry
+  to recover and complete the order.
+modifiers:
+  latency_profile: realistic
+  payment_outcome:
+    sequence: [declined, success]   # first /confirm fails, second succeeds
+  server_error_rate: 0.0
+  frozen_time_iso: "2026-05-01T12:00:00Z"
+budget:
+  max_steps: 25
+  max_wall_clock_s: 120
+success:
+  type: state_predicate
+  query: SELECT COUNT(*) AS count FROM "order" WHERE status = 'paid'
+  predicate: result == 1
+```
+
+### Configuring at runtime (without a task)
+
+The same knobs are available via the admin API — handy for ad-hoc poking or building your own runner:
+
+```bash
+curl -s http://localhost:8080/__test__/configure -H 'content-type: application/json' \
+  -d '{"latency_profile":"slow_3g","payment_outcome":"3ds_required"}'
+```
+
+Or from Python:
+
+```python
+env = Environment(site="shop_v1")
+env.configure({"latency_profile": "slow_3g", "payment_outcome": "3ds_required"})
+```
+
+### Adding a new modifier
+
+The contract is intentionally small. A modifier is just a key in `ModifierConfig` plus the middleware/handler that reads it. Concretely:
+
+1. **Add the field** in `sites/shop_v1/backend/app/modifiers.py` (`ModifierConfig` dataclass, `reset()`, `update()`, `to_dict()`).
+2. **Implement the behavior** — either as a new ASGI middleware in `sites/shop_v1/backend/app/middleware/`, or inline in the API handler that should react to it.
+3. **Wire it in** in `sites/shop_v1/backend/app/main.py` (only if it's a middleware).
+4. **Document the YAML key** in this README's table and in `docs/architecture.md`'s modifier table.
+5. **(Optional) Update the task JSON Schema** at `packages/core-py/revar/schemas/task.schema.json` if you want strict validation of the new key.
+
+A good first example to copy is `LatencyMiddleware` (one file, ~30 lines) — it shows the read-config-and-act pattern end-to-end.
+
 ## License
 
 revar is licensed under the **Apache License 2.0**. See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE).
