@@ -1,13 +1,26 @@
-# revar
+<h1 align="center">
+  revar
+</h1>
 
-A deterministic, reproducible test environment for AI browser agents.
+<p align="center">
+  <strong>A deterministic, reproducible test environment for AI browser agents — 
+synthetic websites, failure injection, no real traffic.</strong>
+</p>
+
+<div align="center">
+  <a href="https://github.com/revar-ai/revar/actions/workflows/test.yml">
+      <img src="https://img.shields.io/github/actions/workflow/status/revar-ai/revar/ci.yml?branch=main"
+          alt="Test status (main branch)"></a>
+  <a href="https://github.com/revar-ai/revar/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/revar-ai/revar" alt="License" /></a>
+</div>
 
 Real websites are flaky, expensive, rate-limited, and hostile to automated traffic. Static-HTML benchmarks lack state and dynamic behavior. Revar gives your browser agent a realistic, stateful, instrumented playground — locally, in Docker, in 5 minutes.
 
 ## What's in v0
 
 - **`shop_v1`** — A production-shaped synthetic e-commerce site (FastAPI + React + SQLite) running in a single Docker container. Catalog, cart, multi-step checkout, auth, accounts, returns. Mobile-responsive. Deliberate ambiguous-UI inventory for testing agent reasoning.
-- **Modifiers** — FastAPI middleware that toggles network latency, payment outcomes (declined / 3DS / timeout), server error rates, and session expiration per task. Configured per-task in YAML; no code changes to add new failure-mode combinations.
+- **Modifiers (failure-mode injection)** — FastAPI middleware that toggles network latency, payment outcomes (declined / 3DS / timeout), server error rates, and session expiration per task. Configured per-task in YAML; no code changes to add new failure-mode combinations.
 - **Authoring stack** — A YAML task schema, ~10 failure-mode templates with scripted reference trajectories, and a CLI: `task new`, `task from-template`, `task validate`, `task try`.
 - **Adapters** — `browser-use` (DOM/AX-tree native), `stagehand` (via Node subprocess), and a vision-only baseline. All optional installs.
 - **Trajectory recording** — Per-step DOM snapshots, screenshots, agent actions, token counts, latencies. Deterministic via SQLite snapshot reset and seeded faker.
