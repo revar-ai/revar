@@ -7,6 +7,8 @@
 </p>
 
 <div align="center">
+  <a href="https://pypi.org/project/resurf/">
+    <img src="https://img.shields.io/pypi/v/resurf?logo=pypi&logoColor=white" alt="PyPI" /></a>
   <a href="https://github.com/revar-ai/resurf/actions/workflows/test.yml">
       <img src="https://img.shields.io/github/actions/workflow/status/revar-ai/resurf/ci.yml?branch=main"
           alt="Test status (main branch)"></a>
