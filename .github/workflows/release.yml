@@ -7,9 +7,13 @@
 #   - manual dispatch            -> dry-run to TestPyPI (no GitHub Release)
 #
 # Auth:
-#   We use PyPI Trusted Publishing (OIDC). No PYPI_API_TOKEN secret needed.
-#   You must register both projects on PyPI/TestPyPI as trusted publishers
-#   before the first run — see RELEASING.md.
+#   API tokens stored as GitHub secrets:
+#     PYPI_API_TOKEN          (production PyPI; required)
+#     TEST_PYPI_API_TOKEN     (TestPyPI; optional, only for dry-runs)
+#   Tokens should be project-scoped — generate one for `resurf` and one for
+#   `resurf-models` and concatenate them into a single token if you don't
+#   want to maintain four secrets, or use a single account-scoped token.
+#   See RELEASING.md for setup steps.
 #
 # Sequencing:
 #   resurf depends on `resurf-models==<same version>`, so we publish models
@@ -58,7 +62,8 @@ jobs:
         run: python scripts/check_versions.py
 
   # ----------------------------------------------------------------------
-  # Build sdist + wheel for both packages once, then upload artifacts.
+  # Build sdist + wheel for both packages once, then upload artifacts so
+  # subsequent jobs publish identical bits.
   # ----------------------------------------------------------------------
   build:
     runs-on: ubuntu-latest
@@ -91,11 +96,6 @@ jobs:
   publish-models:
     runs-on: ubuntu-latest
     needs: [build]
-    environment:
-      name: ${{ (github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi') && 'testpypi' || 'pypi' }}
-      url: ${{ (github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi') && format('https://test.pypi.org/project/resurf-models/') || format('https://pypi.org/project/resurf-models/') }}
-    permissions:
-      id-token: write   # required for Trusted Publishing
     steps:
       - name: Download models dist
         uses: actions/download-artifact@v4
@@ -106,10 +106,13 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           repository-url: https://test.pypi.org/legacy/
       - name: Publish to PyPI
         if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.target == 'pypi')
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
 
   # ----------------------------------------------------------------------
   # Publish resurf second.
@@ -117,11 +120,6 @@ jobs:
   publish-resurf:
     runs-on: ubuntu-latest
     needs: [publish-models]
-    environment:
-      name: ${{ (github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi') && 'testpypi' || 'pypi' }}
-      url: ${{ (github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi') && format('https://test.pypi.org/project/resurf/') || format('https://pypi.org/project/resurf/') }}
-    permissions:
-      id-token: write
     steps:
       - name: Download resurf dist
         uses: actions/download-artifact@v4
@@ -132,10 +130,13 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           repository-url: https://test.pypi.org/legacy/
       - name: Publish to PyPI
         if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.target == 'pypi')
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
 
   # ----------------------------------------------------------------------
   # Cut a GitHub Release for tag pushes (skipped on dispatch dry-runs).

@@ -1,49 +1,50 @@
 # Releasing
 
-`resurf` (Python import name: `resurf`) and `resurf-models` ship to PyPI
-together at the same version. Releases are cut by pushing a `v*` git tag; the
-rest is automated by [`.github/workflows/release.yml`](.github/workflows/release.yml).
+`resurf` and `resurf-models` ship to PyPI together at the same version.
+Releases are cut by pushing a `v*` git tag; the rest is automated by
+[`.github/workflows/release.yml`](.github/workflows/release.yml).
 
-We use **PyPI Trusted Publishing** (OIDC) — no API tokens are stored as GitHub
-secrets. The first release requires a one-time setup on PyPI.
+Auth is via PyPI **API tokens** stored as GitHub Actions secrets. Tokens are
+simpler than Trusted Publishing and good enough for a small project; if you
+later want OIDC's stricter security model, see "Switching to Trusted
+Publishing" at the bottom of this doc.
 
 ---
 
 ## One-time setup (per repository)
 
-You only have to do these steps once for the lifetime of the repo.
+You only have to do these once for the lifetime of the repo.
 
-### 1. Reserve the names on PyPI
+### 1. Create PyPI API tokens
 
-If `resurf` and `resurf-models` aren't already yours on PyPI, the *first*
-release will create them and assign you as owner. The bare `resurf` name was
-already taken on PyPI by an unrelated project, which is why our distribution
-is `resurf` even though the import name remains `resurf`. If you want to be
-safe, do a TestPyPI dry-run first (see below) — TestPyPI mirrors the same
-name-claim semantics.
+Generate two tokens — one production, one TestPyPI:
 
-### 2. Register the trusted publisher on PyPI
+1. Sign in at <https://pypi.org/account/login/>.
+2. Go to <https://pypi.org/manage/account/token/> → **Add API token**.
+3. **First release only:** scope it to "Entire account" — project-scoped tokens can't *create* new projects. Once both `resurf` and `resurf-models` exist on PyPI, replace this with two project-scoped tokens (one per project) and concatenate or use whichever you prefer.
+4. Copy the `pypi-...` value. **You can only see it once** — if you lose it, you regenerate.
+5. (Optional) Repeat at <https://test.pypi.org/manage/account/token/> for TestPyPI dry-runs.
 
-For **each** of the two projects (`resurf`, `resurf-models`):
+### 2. Add the tokens as GitHub secrets
 
-1. Go to <https://pypi.org/manage/account/publishing/> and add a "pending publisher" (if the project doesn't exist yet) or, after first release, edit the project on PyPI and add a publisher.
-2. Fill in:
-   - **PyPI Project Name**: `resurf` (or `resurf-models`)
-   - **Owner**: `<your-github-org-or-user>`
-   - **Repository name**: `resurf`
-   - **Workflow name**: `release.yml`
-   - **Environment name**: `pypi`
-3. Repeat the same on <https://test.pypi.org/manage/account/publishing/> with environment name `testpypi` if you want dry-runs to TestPyPI.
+In the repo's *Settings → Secrets and variables → Actions → New repository secret*:
 
-### 3. Create matching environments in GitHub
+| Name                    | Value                       | Required for                |
+|-------------------------|-----------------------------|------------------------------|
+| `PYPI_API_TOKEN`        | the `pypi-...` token        | Tag-driven production releases |
+| `TEST_PYPI_API_TOKEN`   | the test.pypi `pypi-...` token | Manual TestPyPI dry-runs only |
 
-In the repo's *Settings → Environments*, create two environments:
+The release workflow refers to them by exactly those names.
 
-- `pypi` — used by tag-driven production releases.
-- `testpypi` — used by manual dry-runs from the Actions tab.
+### 3. (After first release) Re-scope to project tokens
 
-You can leave both unprotected for now; later you may want to require an approval
-on `pypi` so accidental tags don't auto-publish.
+Account-scoped tokens can publish anything in your account, which is overkill
+for a CI secret. After the first successful release:
+
+1. Generate a new token at <https://pypi.org/manage/account/token/> scoped to **`resurf`** only.
+2. Generate another scoped to **`resurf-models`** only.
+3. Concatenate both into a single secret value separated by newlines (twine accepts both), or split into two secrets (`PYPI_API_TOKEN_RESURF`, `PYPI_API_TOKEN_MODELS`) and update the workflow to use them per job.
+4. Delete the original account-scoped token.
 
 ---
 
@@ -84,7 +85,7 @@ pip install --index-url https://test.pypi.org/simple/ \
 
 ## Local-only release (escape hatch)
 
-If you ever need to publish without GitHub Actions (lost OIDC, broken runner, etc.):
+If you ever need to publish without GitHub Actions (broken runner, lost CI access, etc.):
 
 ```bash
 python -m pip install --upgrade build twine
@@ -110,3 +111,27 @@ We follow [SemVer](https://semver.org/spec/v2.0.0.html):
 Pre-1.0, anything *can* break in a minor release; we still try to call those out clearly in the CHANGELOG.
 
 The two packages always release at the same version. `resurf`'s pin on `resurf-models==<X.Y.Z>` is updated atomically by `scripts/bump_version.py`.
+
+---
+
+## Switching to Trusted Publishing (OIDC)
+
+If you later want to drop the long-lived API tokens, PyPI Trusted Publishing
+mints a fresh OIDC token on every workflow run — no secrets in repo settings.
+The migration is mechanical:
+
+1. On PyPI, go to each project (`resurf`, `resurf-models`) → *Manage → Publishing → Add a new pending publisher*. Fill in: workflow file `release.yml`, environment `pypi`, owner = your GitHub org/user.
+2. In *Settings → Environments* on GitHub, create environments `pypi` and (optionally) `testpypi`.
+3. In `release.yml`, on each `publish-*` job, add:
+
+    ```yaml
+    environment: { name: pypi }
+    permissions: { id-token: write }
+    ```
+
+   …and remove the `password: ${{ secrets.PYPI_API_TOKEN }}` line under each `pypi-publish` step (the action auto-detects OIDC when the token-write permission is set).
+4. Delete the `PYPI_API_TOKEN` / `TEST_PYPI_API_TOKEN` repository secrets.
+
+The benefit is mainly defense-in-depth: a malicious PR or compromised
+maintainer key can't exfiltrate a token that doesn't exist. Worth the click
+budget once you have outside contributors with write access.
