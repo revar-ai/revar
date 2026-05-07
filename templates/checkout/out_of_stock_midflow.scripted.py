@@ -6,8 +6,8 @@ from __future__ import annotations
 
 import time
 
-from revar.adapters.base import AdapterResult
-from revar.trajectory import Step, Trajectory
+from resurf.adapters.base import AdapterResult
+from resurf.trajectory import Step, Trajectory
 
 
 async def run(*, task, env, context, trajectory: Trajectory) -> AdapterResult:

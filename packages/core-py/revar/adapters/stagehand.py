@@ -3,7 +3,7 @@
 
 Stagehand is a Node.js framework. We invoke it via a small Node bridge script
 using JSON-RPC-over-stdio. The bridge script lives at
-`adapters/stagehand/bridge.mjs` in the repo and is shipped with revar;
+`adapters/stagehand/bridge.mjs` in the repo and is shipped with resurf;
 users need Node 20+ on PATH but no Python-side `stagehand` install.
 
 We do NOT take over the Playwright context here — Stagehand owns its own
@@ -74,7 +74,7 @@ class StagehandAdapter(Adapter):
         # structured ``error`` field) and exits non-zero. Try to parse stdout
         # FIRST so we surface a useful message; fall back to stderr only if
         # stdout is empty/unparseable.
-        from revar.trajectory import Step
+        from resurf.trajectory import Step
 
         payload: dict | None = None
         parse_err: Exception | None = None

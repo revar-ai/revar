@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 [project]
 name = "shop-v1-backend"
 version = "0.1.0"
-description = "shop_v1 backend (FastAPI) for revar"
+description = "shop_v1 backend (FastAPI) for resurf"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
 dependencies = [
@@ -19,7 +19,7 @@ dependencies = [
     "argon2-cffi>=23.1",
     "itsdangerous>=2.1",
     "email-validator>=2.1",
-    "revar-models",
+    "resurf-models",
 ]
 
 [project.optional-dependencies]

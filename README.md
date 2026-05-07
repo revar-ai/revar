@@ -1,5 +1,5 @@
 <h1 align="center">
-  revar
+  resurf
 </h1>
 
 <p align="center">
@@ -7,14 +7,14 @@
 </p>
 
 <div align="center">
-  <a href="https://github.com/revar-ai/revar/actions/workflows/test.yml">
-      <img src="https://img.shields.io/github/actions/workflow/status/revar-ai/revar/ci.yml?branch=main"
+  <a href="https://github.com/resurf-ai/resurf/actions/workflows/test.yml">
+      <img src="https://img.shields.io/github/actions/workflow/status/resurf-ai/resurf/ci.yml?branch=main"
           alt="Test status (main branch)"></a>
-  <a href="https://github.com/revar-ai/revar/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/revar-ai/revar" alt="License" /></a>
+  <a href="https://github.com/resurf-ai/resurf/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/resurf-ai/resurf" alt="License" /></a>
 </div>
 
-Real websites are flaky, expensive, rate-limited, and hostile to automated traffic. Static-HTML benchmarks lack state and dynamic behavior. Revar gives your browser agent a realistic, stateful, instrumented playground — with synthetic websites and failure-mode injection.
+Real websites are flaky, expensive, rate-limited, and hostile to automated traffic. Static-HTML benchmarks lack state and dynamic behavior. Resurf gives your browser agent a realistic, stateful, instrumented playground — with synthetic websites and failure-mode injection.
 
 ## What's in v0
 
@@ -31,12 +31,12 @@ v0 ships a single site — `shop_v1` — to keep the focus on getting the abstra
 Prerequisites: Python 3.11+, Docker, Node 20+ (only if you plan to use the Stagehand adapter), and Chromium for Playwright.
 
 ```bash
-# 1. Install revar with the browser-use adapter
-pip install 'revar[browser-use]'
+# 1. Install resurf with the browser-use adapter
+pip install 'resurf[browser-use]'   # imports as `resurf`
 
-# --- Local-development install (use this until revar is published to PyPI) ---
-# git clone https://github.com/revar-ai/revar
-# cd revar
+# --- Local-development install (use this until resurf is published to PyPI) ---
+# git clone https://github.com/resurf-ai/resurf
+# cd resurf
 # python3.11 -m venv .venv && source .venv/bin/activate
 # pip install -e packages/shared-models
 # pip install -e 'packages/core-py[dev,browser-use]'
@@ -50,7 +50,7 @@ docker compose up -d shop_v1
 curl -s http://localhost:8080/api/health
 
 # 4. List bundled tasks
-revar task list
+resurf task list
 
 # 5. Run a task with the browser-use adapter
 export OPENAI_API_KEY=sk-...
@@ -64,14 +64,14 @@ python examples/run_browser_use.py tasks/shop_v1/find/find_product_by_name.yaml
 You should see something like:
 
 ```
-[revar] reset shop_v1 to seed=42
-[revar] running browser-use agent on find_product_by_name
-[revar] step 1: nav https://localhost:8080/
-[revar] step 2: click [aria-label="Search"]
-[revar] step 3: type "Acme Bluetooth Speaker"
+[resurf] reset shop_v1 to seed=42
+[resurf] running browser-use agent on find_product_by_name
+[resurf] step 1: nav https://localhost:8080/
+[resurf] step 2: click [aria-label="Search"]
+[resurf] step 3: type "Acme Bluetooth Speaker"
 ...
-[revar] passed=True steps=7 tokens=4123 wall_clock=12.4s
-[revar] trajectory saved to ./trajectories/...
+[resurf] passed=True steps=7 tokens=4123 wall_clock=12.4s
+[resurf] trajectory saved to ./trajectories/...
 ```
 
 ### Running shop_v1 backend without Docker
@@ -87,7 +87,7 @@ For frontend hacking, `cd sites/shop_v1/frontend && npm install && npm run dev` 
 
 ## Running tests
 
-The full Python test suite runs against `revar` and `revar-models`:
+The full Python test suite runs against `resurf` and `resurf-models`:
 
 ```bash
 # From the repo root, with the venv from quickstart activated
@@ -139,20 +139,20 @@ python examples/run_stagehand.py tasks/shop_v1/find/find_acme_bluetooth_speaker.
 The fastest path is to clone an existing failure-mode template:
 
 ```bash
-revar task from-template checkout/payment_declined_recovery \
+resurf task from-template checkout/payment_declined_recovery \
     -p product_name="Acme Bluetooth Speaker" \
     -p product_slug=acme-bluetooth-speaker \
     --out tasks/shop_v1/checkout/
 
-revar task validate tasks/shop_v1/checkout/acme_bluetooth_speaker_payment_declined_recovery.yaml
-revar task try      tasks/shop_v1/checkout/acme_bluetooth_speaker_payment_declined_recovery.yaml
+resurf task validate tasks/shop_v1/checkout/acme_bluetooth_speaker_payment_declined_recovery.yaml
+resurf task try      tasks/shop_v1/checkout/acme_bluetooth_speaker_payment_declined_recovery.yaml
 ```
 
 Or write YAML by hand — see [`docs/architecture.md`](docs/architecture.md#task-yaml) for the schema.
 
 ## Modifiers (failure-mode injection)
 
-Modifiers are how a task says "make the site behave like X." They're set under `modifiers:` in the task YAML, and revar applies them at reset time via `POST /__test__/configure`. Nothing in `shop_v1`'s product code needs to know about specific failure modes — middlewares handle them transparently.
+Modifiers are how a task says "make the site behave like X." They're set under `modifiers:` in the task YAML, and resurf applies them at reset time via `POST /__test__/configure`. Nothing in `shop_v1`'s product code needs to know about specific failure modes — middlewares handle them transparently.
 
 ### Available modifiers
 
@@ -212,7 +212,7 @@ The contract is intentionally small. A modifier is just a key in `ModifierConfig
 2. **Implement the behavior** — either as a new ASGI middleware in `sites/shop_v1/backend/app/middleware/`, or inline in the API handler that should react to it.
 3. **Wire it in** in `sites/shop_v1/backend/app/main.py` (only if it's a middleware).
 4. **Document the YAML key** in this README's table and in `docs/architecture.md`'s modifier table.
-5. **(Optional) Update the task JSON Schema** at `packages/core-py/revar/schemas/task.schema.json` if you want strict validation of the new key.
+5. **(Optional) Update the task JSON Schema** at `packages/core-py/resurf/schemas/task.schema.json` if you want strict validation of the new key.
 
 A good first example to copy is `LatencyMiddleware` (one file, ~30 lines) — it shows the read-config-and-act pattern end-to-end.
 
@@ -220,7 +220,7 @@ A good first example to copy is `LatencyMiddleware` (one file, ~30 lines) — it
 
 A site is just an HTTP service that implements six admin endpoints — `GET /api/health`, `POST /__test__/{reset,configure,query,freeze_time}`, and `GET /__test__/state` — guarded by `REVAR_TEST_MODE=1`. The contract is HTTP-shaped, so any backend stack works.
 
-To add one: scaffold under `sites/<your_site>/`, add a deterministic seeder under `packages/shared-models/revar_models/<your_site>/`, register a service block in `docker-compose.yml`, and drop tasks under `tasks/<your_site>/` with `site: <your_site>` in the YAML. Copy from `shop_v1` — `app/modifiers.py` and `api/test_endpoints.py` are near-verbatim reusable. Contributions welcome.
+To add one: scaffold under `sites/<your_site>/`, add a deterministic seeder under `packages/shared-models/resurf_models/<your_site>/`, register a service block in `docker-compose.yml`, and drop tasks under `tasks/<your_site>/` with `site: <your_site>` in the YAML. Copy from `shop_v1` — `app/modifiers.py` and `api/test_endpoints.py` are near-verbatim reusable. Contributions welcome.
 
 ## Releasing
 
@@ -228,7 +228,7 @@ Cut a release by bumping versions with `scripts/bump_version.py X.Y.Z`, updating
 
 ## License
 
-revar is licensed under the **Apache License 2.0**. See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE).
+resurf is licensed under the **Apache License 2.0**. See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE).
 
 
 ## Contributing

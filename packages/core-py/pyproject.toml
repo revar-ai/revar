@@ -4,13 +4,16 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "revar"
+# PyPI distribution name. The Python *import* name stays `resurf` (see
+# `resurf/__init__.py`) — only the published package is `resurf` because
+# the bare `resurf` name was already taken on PyPI.
+name = "resurf"
 version = "0.1.0"
 description = "A deterministic, reproducible test environment for AI browser agents"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
-authors = [{ name = "The revar contributors" }]
+authors = [{ name = "The resurf contributors" }]
 keywords = ["browser", "agents", "evaluation", "testing", "playwright", "ai"]
 classifiers = [
     "License :: OSI Approved :: Apache Software License",
@@ -20,7 +23,7 @@ classifiers = [
 ]
 dependencies = [
     # Pinned to the same version we ship in lockstep — see RELEASING.md.
-    "revar-models==0.1.0",
+    "resurf-models==0.1.0",
     "httpx>=0.27",
     "playwright>=1.43",
     "jsonschema>=4.21",
@@ -37,8 +40,8 @@ stagehand = []  # Stagehand is invoked via Node subprocess; only requires Node 2
 vision = ["openai>=1.30", "pillow>=10.0"]
 
 [project.scripts]
-revar = "revar.cli:main"
+resurf = "resurf.cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["revar"]
-include = ["revar/schemas/*.json"]
+packages = ["resurf"]
+include = ["resurf/schemas/*.json"]

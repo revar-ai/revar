@@ -2,7 +2,7 @@
 """SQLModel schema for shop_v1.
 
 This module is the single source of truth for shop_v1's data shape. The site
-backend writes to it; the revar SDK reads from it for success_fn
+backend writes to it; the resurf SDK reads from it for success_fn
 predicates. Keep field semantics stable across versions where possible.
 """
 

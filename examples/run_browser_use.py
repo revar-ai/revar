@@ -13,16 +13,16 @@ import asyncio
 import os
 import sys
 
-from revar import Environment, Runner, Task
-from revar.adapters.browser_use import BrowserUseAdapter
+from resurf import Environment, Runner, Task
+from resurf.adapters.browser_use import BrowserUseAdapter
 
 
 async def main(task_path: str) -> int:
     task = Task.from_yaml(task_path)
     env = Environment(site=task.site)
     health = env.health()
-    print(f"[revar] site healthy: {health.get('ok')}")
-    print(f"[revar] running browser-use on {task.id}")
+    print(f"[resurf] site healthy: {health.get('ok')}")
+    print(f"[resurf] running browser-use on {task.id}")
 
     headed = os.environ.get("REVAR_HEADED", "").lower() in ("1", "true", "yes")
     headless = not headed
@@ -35,9 +35,9 @@ async def main(task_path: str) -> int:
     )
 
     print()
-    print(f"[revar] passed={result.eval.passed}  reason={result.eval.reason}")
+    print(f"[resurf] passed={result.eval.passed}  reason={result.eval.reason}")
     for k, v in result.metrics.items():
-        print(f"[revar]   {k}: {v}")
+        print(f"[resurf]   {k}: {v}")
     return 0 if result.eval.passed else 1
 
 

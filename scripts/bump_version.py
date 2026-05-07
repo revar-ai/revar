@@ -2,13 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 """Bump the version in every place that mentions it.
 
-We ship `revar` and `revar-models` in lockstep at the same version, with
-`revar`'s pyproject pinned to `revar-models==<same>`. This script keeps the
+We ship `resurf` and `resurf-models` in lockstep at the same version, with
+`resurf`'s pyproject pinned to `resurf-models==<same>`. This script keeps the
 four call-sites in sync:
 
     packages/core-py/pyproject.toml          project.version
-    packages/core-py/pyproject.toml          dependencies (revar-models pin)
-    packages/core-py/revar/__init__.py       __version__
+    packages/core-py/pyproject.toml          dependencies (resurf-models pin)
+    packages/core-py/resurf/__init__.py       __version__
     packages/shared-models/pyproject.toml    project.version
 
 Usage:
@@ -24,7 +24,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 
 CORE_PYPROJECT = REPO / "packages" / "core-py" / "pyproject.toml"
-CORE_INIT = REPO / "packages" / "core-py" / "revar" / "__init__.py"
+CORE_INIT = REPO / "packages" / "core-py" / "resurf" / "__init__.py"
 MODELS_PYPROJECT = REPO / "packages" / "shared-models" / "pyproject.toml"
 
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+(?:[a-zA-Z0-9.\-+]*)?$")
@@ -57,8 +57,8 @@ def main(argv: list[str]) -> int:
     )
     replace_one(
         CORE_PYPROJECT,
-        r'"revar-models==[^"]+"',
-        f'"revar-models=={version}"',
+        r'"resurf-models==[^"]+"',
+        f'"resurf-models=={version}"',
     )
     replace_one(
         CORE_INIT,

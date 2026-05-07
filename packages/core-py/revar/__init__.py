@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""revar SDK."""
+"""resurf SDK."""
 
 from .adapters.base import Action, Adapter, AdapterResult
 from .env import Environment

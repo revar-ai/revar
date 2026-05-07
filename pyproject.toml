@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Workspace-level pyproject for revar monorepo. Individual packages
+# Workspace-level pyproject for resurf monorepo. Individual packages
 # under packages/ have their own pyproject.toml and are installed as editable
 # packages during development. See CONTRIBUTING.md for development setup.
 

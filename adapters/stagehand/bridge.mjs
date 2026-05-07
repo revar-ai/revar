@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /**
- * Stagehand <-> revar bridge.
+ * Stagehand <-> resurf bridge.
  *
  * Reads a single JSON request from stdin:
  *   {
@@ -64,14 +64,22 @@ async function main() {
   // call. Wrap the method to accumulate tokens across the run.
   let tokens_in = 0;
   let tokens_out = 0;
-  if (stagehand.llmClient && typeof stagehand.llmClient.createChatCompletion === "function") {
-    const originalCreate = stagehand.llmClient.createChatCompletion.bind(stagehand.llmClient);
+  if (
+    stagehand.llmClient &&
+    typeof stagehand.llmClient.createChatCompletion === "function"
+  ) {
+    const originalCreate = stagehand.llmClient.createChatCompletion.bind(
+      stagehand.llmClient,
+    );
     stagehand.llmClient.createChatCompletion = async (opts) => {
       const result = await originalCreate(opts);
-      const usage = result && (result.usage || (result.data && result.data.usage));
+      const usage =
+        result && (result.usage || (result.data && result.data.usage));
       if (usage) {
-        tokens_in += Number(usage.prompt_tokens || usage.input_tokens || 0) || 0;
-        tokens_out += Number(usage.completion_tokens || usage.output_tokens || 0) || 0;
+        tokens_in +=
+          Number(usage.prompt_tokens || usage.input_tokens || 0) || 0;
+        tokens_out +=
+          Number(usage.completion_tokens || usage.output_tokens || 0) || 0;
       }
       return result;
     };

@@ -2,7 +2,7 @@
 """Scripted reference trajectory for find_product_by_name.
 
 Demonstrates the simplest possible interaction: navigate, search, click result.
-Used by `revar task try` to prove tasks generated from this template
+Used by `resurf task try` to prove tasks generated from this template
 are solvable end-to-end (and as an upper-bound trajectory for token/step
 baselining once real agents arrive).
 """
@@ -11,8 +11,8 @@ from __future__ import annotations
 
 import time
 
-from revar.adapters.base import AdapterResult
-from revar.trajectory import Step, Trajectory
+from resurf.adapters.base import AdapterResult
+from resurf.trajectory import Step, Trajectory
 
 
 async def run(*, task, env, context, trajectory: Trajectory) -> AdapterResult:

@@ -41,14 +41,14 @@ class VisionBaselineAdapter(Adapter):
             from openai import OpenAI
         except ImportError as exc:  # pragma: no cover
             raise RuntimeError(
-                "openai is not installed. Install with `pip install 'revar[vision]'`."
+                "openai is not installed. Install with `pip install 'resurf[vision]'`."
             ) from exc
 
         client = OpenAI()
         page = await context.new_page()
         await page.goto(env.base_url + "/")
 
-        from revar.trajectory import Step
+        from resurf.trajectory import Step
 
         max_steps = self.max_steps or task.budget.max_steps
         tokens_in = 0

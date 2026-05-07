@@ -1,4 +1,4 @@
-# revar architecture (v0)
+# resurf architecture (v0)
 
 ## High level
 
@@ -23,7 +23,7 @@
 │                       state, query (test-mode only)              │       │
 │   ───────────────────────────────────────────────────────────────┘       │
 │                                                                          │
-│   Runner (revar.Runner)                                            │
+│   Runner (resurf.Runner)                                            │
 │     1. env.reset(seed)                                                   │
 │     2. env.configure(modifiers)                                          │
 │     3. launch browser context (auth pre-filled if requested)             │
@@ -90,8 +90,8 @@ budget:
 tags: [checkout, recovery]
 ```
 
-The schema is enforced via `packages/core-py/revar/schemas/task.schema.json`
-and surfaced through `revar task validate`.
+The schema is enforced via `packages/core-py/resurf/schemas/task.schema.json`
+and surfaced through `resurf task validate`.
 
 ## Modifier framework
 

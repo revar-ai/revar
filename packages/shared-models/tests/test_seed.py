@@ -6,8 +6,8 @@ from __future__ import annotations
 import os
 import tempfile
 
-from revar_models.shop_v1 import StateReader, seed_database
-from revar_models.shop_v1.models import Coupon, Product, User
+from resurf_models.shop_v1 import StateReader, seed_database
+from resurf_models.shop_v1.models import Coupon, Product, User
 from sqlmodel import Session as DBSession
 from sqlmodel import create_engine, select
 

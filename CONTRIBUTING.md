@@ -1,6 +1,6 @@
-# Contributing to revar
+# Contributing to resurf
 
-Thanks for your interest. revar is in v0 and contributions are very welcome — especially **new failure-mode templates** and **task contributions**, which are the highest-leverage ways to grow the project.
+Thanks for your interest. resurf is in v0 and contributions are very welcome — especially **new failure-mode templates** and **task contributions**, which are the highest-leverage ways to grow the project.
 
 ## Before you open a PR
 
@@ -19,9 +19,9 @@ A task is a YAML file under `tasks/shop_v1/<category>/`. Tasks are data, not cod
 
 Quick recipe:
 ```bash
-revar task from-template <category>/<template> --out tasks/shop_v1/<category>/
-revar task validate tasks/shop_v1/<category>/<your-task>.yaml
-revar task try      tasks/shop_v1/<category>/<your-task>.yaml
+resurf task from-template <category>/<template> --out tasks/shop_v1/<category>/
+resurf task validate tasks/shop_v1/<category>/<your-task>.yaml
+resurf task try      tasks/shop_v1/<category>/<your-task>.yaml
 ```
 
 Open a Discussion linking your task; we'll review and merge.
@@ -32,7 +32,7 @@ A template parameterizes a whole *class* of tasks. Templates live under `templat
 
 Template-contribution checklist:
 - A doc header in the `.yaml.j2` declaring parameters, required modifiers, and a one-line description
-- A scripted reference trajectory that runs green via `revar task try`
+- A scripted reference trajectory that runs green via `resurf task try`
 - At least one example task generated from the template under `tasks/shop_v1/`
 - A short README addition or doc note
 
@@ -48,8 +48,8 @@ For code changes, please:
 
 ```bash
 # Clone
-git clone https://github.com/<org>/revar
-cd revar
+git clone https://github.com/<org>/resurf
+cd resurf
 
 # Install both packages in editable mode
 pip install -e packages/shared-models -e 'packages/core-py[dev,browser-use]'
@@ -83,6 +83,6 @@ REVAR_TEST_MODE=1 uvicorn app.main:app --reload --port 8080
 
 ## License of contributions
 
-revar is licensed under the Apache License 2.0. Per Section 5 of that license, contributions you submit (e.g., via pull request) are licensed to the project under Apache 2.0 unless you explicitly state otherwise. By submitting a contribution you affirm that you have the right to do so.
+resurf is licensed under the Apache License 2.0. Per Section 5 of that license, contributions you submit (e.g., via pull request) are licensed to the project under Apache 2.0 unless you explicitly state otherwise. By submitting a contribution you affirm that you have the right to do so.
 
 If your employer claims rights to your contributions, please make sure you have permission to contribute under Apache 2.0 (most employers' open-source policies cover this for permissive licenses).

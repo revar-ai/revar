@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
-from revar_models.shop_v1.models import Session as SessionRow
+from resurf_models.shop_v1.models import Session as SessionRow
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 

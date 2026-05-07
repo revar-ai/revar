@@ -22,7 +22,10 @@ export function Layout() {
             Acme Shop
           </Link>
 
-          <nav aria-label="Primary" className="hidden md:flex gap-6 text-sm ml-6">
+          <nav
+            aria-label="Primary"
+            className="hidden md:flex gap-6 text-sm ml-6"
+          >
             <NavLink to="/products" className="hover:text-brand-700">
               Products
             </NavLink>
@@ -40,7 +43,8 @@ export function Layout() {
             onSubmit={(e) => {
               e.preventDefault();
               const form = e.currentTarget;
-              const q = (form.elements.namedItem("q") as HTMLInputElement)?.value ?? "";
+              const q =
+                (form.elements.namedItem("q") as HTMLInputElement)?.value ?? "";
               navigate(`/search?q=${encodeURIComponent(q)}`);
             }}
           >
@@ -76,10 +80,16 @@ export function Layout() {
 
           {me.data?.authenticated ? (
             <Menu as="div" className="relative">
-              <Menu.Button className="btn btn-secondary" aria-label="Account menu">
+              <Menu.Button
+                className="btn btn-secondary"
+                aria-label="Account menu"
+              >
                 {me.data.user?.full_name.split(" ")[0] ?? "Account"}
               </Menu.Button>
-              <Transition as={Fragment} enter="transition ease-out duration-100">
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-100"
+              >
                 <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right rounded-md card shadow-lg focus:outline-none">
                   <div className="py-1">
                     <Menu.Item>
@@ -134,11 +144,16 @@ export function Layout() {
               Menu
             </Disclosure.Button>
             <Disclosure.Panel className="absolute left-0 right-0 top-full bg-white border-b border-slate-200">
-              <nav aria-label="Mobile" className="px-4 py-3 flex flex-col gap-2 text-sm">
+              <nav
+                aria-label="Mobile"
+                className="px-4 py-3 flex flex-col gap-2 text-sm"
+              >
                 <NavLink to="/products">Products</NavLink>
                 <NavLink to="/search">Search</NavLink>
                 <NavLink to="/account">Account</NavLink>
-                {!me.data?.authenticated && <NavLink to="/login">Sign in</NavLink>}
+                {!me.data?.authenticated && (
+                  <NavLink to="/login">Sign in</NavLink>
+                )}
               </nav>
             </Disclosure.Panel>
           </Disclosure>
@@ -151,7 +166,7 @@ export function Layout() {
 
       <footer className="border-t border-slate-200 mt-16">
         <div className="max-w-7xl mx-auto px-4 py-6 text-sm text-slate-500">
-          &copy; Acme Shop · synthetic site for revar
+          &copy; Acme Shop · synthetic site for resurf
         </div>
       </footer>
 

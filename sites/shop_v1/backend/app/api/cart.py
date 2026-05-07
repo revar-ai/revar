@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
-from revar_models.shop_v1.models import Cart, CartItem, Product
+from resurf_models.shop_v1.models import Cart, CartItem, Product
 from sqlmodel import select
 
 from ..deps import CSRF, DB, SessionDep

@@ -7,8 +7,8 @@ import asyncio
 import os
 import sys
 
-from revar import Environment, Runner, Task
-from revar.adapters.vision_baseline import VisionBaselineAdapter
+from resurf import Environment, Runner, Task
+from resurf.adapters.vision_baseline import VisionBaselineAdapter
 
 
 async def main(task_path: str) -> int:

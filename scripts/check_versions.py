@@ -14,7 +14,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 
 CORE_PYPROJECT = REPO / "packages" / "core-py" / "pyproject.toml"
-CORE_INIT = REPO / "packages" / "core-py" / "revar" / "__init__.py"
+CORE_INIT = REPO / "packages" / "core-py" / "resurf" / "__init__.py"
 MODELS_PYPROJECT = REPO / "packages" / "shared-models" / "pyproject.toml"
 
 
@@ -27,10 +27,10 @@ def grep(path: Path, pattern: str, group: int = 1) -> str:
 
 def main() -> int:
     versions = {
-        "revar (pyproject)": grep(CORE_PYPROJECT, r'^version\s*=\s*"([^"]+)"'),
-        "revar (__init__)": grep(CORE_INIT, r'^__version__\s*=\s*"([^"]+)"'),
-        "revar-models pin": grep(CORE_PYPROJECT, r'"revar-models==([^"]+)"'),
-        "revar-models (pyproject)": grep(MODELS_PYPROJECT, r'^version\s*=\s*"([^"]+)"'),
+        "resurf (pyproject)": grep(CORE_PYPROJECT, r'^version\s*=\s*"([^"]+)"'),
+        "resurf (__init__)": grep(CORE_INIT, r'^__version__\s*=\s*"([^"]+)"'),
+        "resurf-models pin": grep(CORE_PYPROJECT, r'"resurf-models==([^"]+)"'),
+        "resurf-models (pyproject)": grep(MODELS_PYPROJECT, r'^version\s*=\s*"([^"]+)"'),
     }
     distinct = set(versions.values())
     if len(distinct) == 1:

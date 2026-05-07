@@ -49,10 +49,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build shop_v1 image
-        run: docker build -f sites/shop_v1/Dockerfile -t revar/shop_v1:ci .
+        run: docker build -f sites/shop_v1/Dockerfile -t resurf/shop_v1:ci .
       - name: Smoke-test container
         run: |
-          docker run -d --name shop_v1 -p 8080:8080 revar/shop_v1:ci
+          docker run -d --name shop_v1 -p 8080:8080 resurf/shop_v1:ci
           for i in $(seq 1 30); do
             if curl -fsS http://localhost:8080/api/health; then
               echo "healthy"
@@ -84,6 +84,6 @@ jobs:
           shopt -s globstar nullglob
           for f in tasks/**/*.yaml; do
             echo "::group::$f"
-            revar task validate "$f" --skip-live
+            resurf task validate "$f" --skip-live
             echo "::endgroup::"
           done

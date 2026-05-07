@@ -7,8 +7,8 @@ from collections.abc import Iterator
 from typing import Annotated
 
 from fastapi import Depends, Header, HTTPException, Request, status
-from revar_models.shop_v1.models import Session as SessionRow
-from revar_models.shop_v1.models import User
+from resurf_models.shop_v1.models import Session as SessionRow
+from resurf_models.shop_v1.models import User
 from sqlmodel import Session as DBSession
 from sqlmodel import create_engine
 

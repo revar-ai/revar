@@ -29,7 +29,7 @@
 .vscode/
 *.swp
 
-# revar-specific output
+# resurf-specific output
 trajectories/
 *.sqlite
 *.sqlite-*

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Smoke-run a task using its scripted reference trajectory.
 
-This is what `revar task try` does under the hood. Useful as a
+This is what `resurf task try` does under the hood. Useful as a
 zero-API-key way to confirm a task is wired correctly.
 """
 
@@ -13,8 +13,8 @@ import os
 import sys
 from pathlib import Path
 
-from revar import Environment, Runner, Task
-from revar.adapters.base import Adapter
+from resurf import Environment, Runner, Task
+from resurf.adapters.base import Adapter
 
 
 def _resolve_scripted(task: Task) -> Path:

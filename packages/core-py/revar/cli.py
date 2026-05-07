@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""revar command-line interface.
+"""resurf command-line interface.
 
 Subcommands:
   task list                      List bundled tasks
@@ -47,9 +47,9 @@ def _resolve_repo_root() -> Path:
 
 
 @click.group()
-@click.version_option(package_name="revar")
+@click.version_option(package_name="resurf")
 def main() -> None:
-    """revar CLI."""
+    """resurf CLI."""
 
 
 # ---------------------------------------------------------------------------
@@ -222,7 +222,7 @@ def task_try(path: str, base_url: str | None, headed: bool) -> None:
         )
         sys.exit(2)
 
-    spec = importlib.util.spec_from_file_location("_revar_scripted", scripted)
+    spec = importlib.util.spec_from_file_location("_resurf_scripted", scripted)
     if spec is None or spec.loader is None:
         console.print(f"[red]Could not load scripted trajectory:[/red] {scripted}")
         sys.exit(2)

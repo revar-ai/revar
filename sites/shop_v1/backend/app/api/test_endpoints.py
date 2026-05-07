@@ -12,7 +12,7 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from revar_models.shop_v1 import seed_database
+from resurf_models.shop_v1 import seed_database
 from sqlalchemy import text
 
 from ..config import get_settings

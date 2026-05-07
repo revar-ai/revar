@@ -7,7 +7,7 @@ import base64
 import json
 
 from fastapi import APIRouter, HTTPException, Query, Request
-from revar_models.shop_v1.models import Category, EventLog, Product
+from resurf_models.shop_v1.models import Category, EventLog, Product
 from sqlmodel import func, or_, select
 
 from ..config import get_settings

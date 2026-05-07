@@ -13,7 +13,7 @@ from datetime import datetime
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
-from revar_models.shop_v1.models import (
+from resurf_models.shop_v1.models import (
     Address,
     Cart,
     CartItem,

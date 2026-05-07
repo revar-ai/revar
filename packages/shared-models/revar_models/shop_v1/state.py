@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """State reader for shop_v1 success_fn predicates.
 
-The revar SDK uses StateReader to evaluate task success against the
+The resurf SDK uses StateReader to evaluate task success against the
 backend SQLite file directly, bypassing the HTTP layer. This is what makes
 deterministic eval possible: no flaky DOM scraping for "did the order go
 through?", just a SQL query against shared models.

@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 import yaml
-from revar.task import Task, validate_task_dict
-from revar.templating import parse_template_header, render_template_to_dict
+from resurf.task import Task, validate_task_dict
+from resurf.templating import parse_template_header, render_template_to_dict
 
 REPO = Path(__file__).resolve().parents[3]
 
@@ -60,7 +60,7 @@ def test_invalid_task_raises():
 
 
 def test_task_generator_renders_combos():
-    from revar.task import TaskGenerator
+    from resurf.task import TaskGenerator
 
     gen = TaskGenerator(
         template_path=str(REPO / "templates" / "catalog" / "find_product_by_name.yaml.j2"),

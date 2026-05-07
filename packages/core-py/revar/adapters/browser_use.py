@@ -4,7 +4,7 @@
 Hands the agent the task goal as a natural-language prompt, lets browser-use
 own its browser, and converts its history into our Trajectory shape.
 
-Install with: pip install 'revar[browser-use]'
+Install with: pip install 'resurf[browser-use]'
 
 Compatibility notes
 -------------------
@@ -16,7 +16,7 @@ Compatibility notes
   Environment's Playwright context (the two are separate). For tasks that
   require pre-auth, we surface the seeded credentials in the task prompt
   and let the agent sign in itself. A future revision can pass a
-  ``cdp_url`` to share a launched Chromium between revar and browser-use.
+  ``cdp_url`` to share a launched Chromium between resurf and browser-use.
 - Token accounting: browser-use exposes per-step usage on
   ``AgentHistoryList.history``; we sum what's available best-effort.
 """
@@ -50,7 +50,7 @@ class BrowserUseAdapter(Adapter):
         except ImportError as exc:  # pragma: no cover
             raise RuntimeError(
                 "browser-use is not installed. "
-                "Install with `pip install 'revar[browser-use]'` "
+                "Install with `pip install 'resurf[browser-use]'` "
                 "(requires browser-use >= 0.12)."
             ) from exc
 
@@ -99,7 +99,7 @@ class BrowserUseAdapter(Adapter):
             except Exception as exc:
                 # Pre-nav is best-effort; fall back to letting the agent navigate.
                 if os.environ.get("REVAR_DEBUG"):
-                    print(f"[revar.browser_use] prenav failed, agent will navigate: {exc!r}", flush=True)
+                    print(f"[resurf.browser_use] prenav failed, agent will navigate: {exc!r}", flush=True)
 
         agent = Agent(
             task=prompt,
@@ -110,7 +110,7 @@ class BrowserUseAdapter(Adapter):
         max_steps = self.max_steps or task.budget.max_steps
         history = await agent.run(max_steps=max_steps)
 
-        from revar.trajectory import Step
+        from resurf.trajectory import Step
 
         # Run-level token totals: in v0.12 usage lives on AgentHistoryList,
         # NOT on per-AgentHistory items (they only have StepMetadata for timing).
@@ -131,17 +131,17 @@ class BrowserUseAdapter(Adapter):
                     if os.environ.get("REVAR_DEBUG"):
                         entries = len(getattr(tcs, "usage_history", []) or [])
                         print(
-                            f"[revar.browser_use] token_cost_service fallback: "
+                            f"[resurf.browser_use] token_cost_service fallback: "
                             f"entries={entries} prompt={tokens_in} completion={tokens_out}",
                             flush=True,
                         )
             except Exception as exc:
                 if os.environ.get("REVAR_DEBUG"):
-                    print(f"[revar.browser_use] token fallback failed: {exc!r}", flush=True)
+                    print(f"[resurf.browser_use] token fallback failed: {exc!r}", flush=True)
 
         if os.environ.get("REVAR_DEBUG"):
             print(
-                f"[revar.browser_use] history.usage={run_usage!r} "
+                f"[resurf.browser_use] history.usage={run_usage!r} "
                 f"final tokens_in={tokens_in} tokens_out={tokens_out}",
                 flush=True,
             )

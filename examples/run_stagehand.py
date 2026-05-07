@@ -19,16 +19,16 @@ import asyncio
 import os
 import sys
 
-from revar import Environment, Runner, Task
-from revar.adapters.stagehand import StagehandAdapter
+from resurf import Environment, Runner, Task
+from resurf.adapters.stagehand import StagehandAdapter
 
 
 async def main(task_path: str) -> int:
     task = Task.from_yaml(task_path)
     env = Environment(site=task.site)
     health = env.health()
-    print(f"[revar] site healthy: {health.get('ok')}")
-    print(f"[revar] running stagehand on {task.id}")
+    print(f"[resurf] site healthy: {health.get('ok')}")
+    print(f"[resurf] running stagehand on {task.id}")
 
     headed = os.environ.get("REVAR_HEADED", "").lower() in ("1", "true", "yes")
     headless = not headed
@@ -41,9 +41,9 @@ async def main(task_path: str) -> int:
     )
 
     print()
-    print(f"[revar] passed={result.eval.passed}  reason={result.eval.reason}")
+    print(f"[resurf] passed={result.eval.passed}  reason={result.eval.reason}")
     for k, v in result.metrics.items():
-        print(f"[revar]   {k}: {v}")
+        print(f"[resurf]   {k}: {v}")
     return 0 if result.eval.passed else 1
 
 

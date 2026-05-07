@@ -14,7 +14,8 @@ export function HomePage() {
           Welcome to Acme Shop
         </h1>
         <p className="mt-3 text-slate-600 max-w-xl">
-          Audio, wearables, fragrance and more — handpicked for revar evaluations.
+          Audio, wearables, fragrance and more — handpicked for resurf
+          evaluations.
         </p>
         <Link to="/products" className="btn btn-primary mt-6">
           Shop all products

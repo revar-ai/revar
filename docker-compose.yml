@@ -4,8 +4,8 @@ services:
     build:
       context: .
       dockerfile: sites/shop_v1/Dockerfile
-    image: revar/shop_v1:dev
-    container_name: revar_shop_v1
+    image: resurf/shop_v1:dev
+    container_name: resurf_shop_v1
     environment:
       REVAR_TEST_MODE: "1"
       DATABASE_URL: "sqlite:////data/shop_v1.sqlite"
