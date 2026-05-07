@@ -1,9 +1,9 @@
 <h1 align="center">
-  resurf
+  Resurf
 </h1>
 
 <p align="center">
-  <strong>Local, deterministic test environment for AI browser agent with failure-mode injection</strong>
+  <strong>Realistic, Reproducible Test Framework for AI Browser Agents</strong>
 </p>
 
 <div align="center">
@@ -16,7 +16,15 @@
     <img src="https://img.shields.io/github/license/revar-ai/resurf" alt="License" /></a>
 </div>
 
-Real websites are flaky, expensive, rate-limited, and hostile to automated traffic. Static-HTML benchmarks lack state and dynamic behavior. Resurf gives your browser agent a realistic, stateful, instrumented playground — with synthetic websites and failure-mode injection.
+Systematic testing of browser agents today is not easy: real websites are flaky, rate-limited and expensive (bot unblocking), while static-HTML benchmarks lack state and dynamic behavior. Resurf gives your browser agent a realistic, stateful, instrumented framework — built on synthetic websites with failure-mode injection.
+
+| | **Mind2Web** | **WebVoyager** | **Resurf** |
+|---|:---:|:---:|:---:|
+| Realistic, dynamic, interactive environment    | ❌ | ✅ | ✅ |
+| Deterministic & reproducible      | ✅ | ❌ | ✅ |
+| Failure-mode injection (latency, payment errors, 5xx) | ❌ | ❌ | ✅ |
+| Auditable success eval (DB state, not LLM judge) | ❌ | ❌ | ✅ |
+| No dependency on live websites    | ✅ | ❌ | ✅ |
 
 ## What's in v0
 
