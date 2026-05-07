@@ -7,11 +7,11 @@
 </p>
 
 <div align="center">
-  <a href="https://github.com/resurf-ai/resurf/actions/workflows/test.yml">
-      <img src="https://img.shields.io/github/actions/workflow/status/resurf-ai/resurf/ci.yml?branch=main"
+  <a href="https://github.com/revar-ai/resurf/actions/workflows/test.yml">
+      <img src="https://img.shields.io/github/actions/workflow/status/revar-ai/resurf/ci.yml?branch=main"
           alt="Test status (main branch)"></a>
-  <a href="https://github.com/resurf-ai/resurf/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/resurf-ai/resurf" alt="License" /></a>
+  <a href="https://github.com/revar-ai/resurf/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/revar-ai/resurf" alt="License" /></a>
 </div>
 
 Real websites are flaky, expensive, rate-limited, and hostile to automated traffic. Static-HTML benchmarks lack state and dynamic behavior. Resurf gives your browser agent a realistic, stateful, instrumented playground — with synthetic websites and failure-mode injection.
@@ -35,7 +35,7 @@ Prerequisites: Python 3.11+, Docker, Node 20+ (only if you plan to use the Stage
 pip install 'resurf[browser-use]'   # imports as `resurf`
 
 # --- Local-development install (use this until resurf is published to PyPI) ---
-# git clone https://github.com/resurf-ai/resurf
+# git clone https://github.com/revar-ai/resurf
 # cd resurf
 # python3.11 -m venv .venv && source .venv/bin/activate
 # pip install -e packages/shared-models
