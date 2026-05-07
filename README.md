@@ -3,7 +3,7 @@
 </h1>
 
 <p align="center">
-  <strong>A deterministic, reproducible test environment for AI browser agents</strong>
+  <strong>Local, deterministic test environment for AI browser agent with failure-mode injection</strong>
 </p>
 
 <div align="center">
