@@ -7,7 +7,7 @@ from .runner import Runner, RunResult
 from .task import EvalResult, Task, TaskGenerator
 from .trajectory import Step, Trajectory
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 __all__ = [
     "Action",
